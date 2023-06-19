@@ -1,0 +1,85 @@
+{
+  "name": "lv-i18n",
+  "displayName": "LV i18n",
+  "description": "国际化插件",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.79.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "lv-i18n.helloWorld",
+        "title": "Hello World"
+      }
+    ],
+    "configuration": {
+      "type": "object",
+      "title": "lv-in18n",
+      "properties": {
+        "lv-in18n.localeTranslatePath": {
+          "type": "string",
+          "description": "本地翻译文件路径"
+        },
+        "lv-in18n.remoteTranslatePath": {
+          "type": "string",
+          "description": "远程翻译文件地址"
+        },
+        "lv-in18n.translatedPath": {
+          "type": "string",
+          "default": "**/src/i18n/**",
+          "description": "翻译文件路径"
+        },
+        "lv-i18n.splitFile": {
+          "type": "boolean",
+          "default": "true",
+          "description": "是否拆分翻译文件"
+        },
+        "lv-i18n.languages": {
+          "type":"array",
+          "default": "['en', 'zh']",
+          "description": "翻译语言集合"
+        },
+        "lv-i18n.baiduAppid": {
+          "type": "string",
+          "description": "百度翻译appid"
+        },
+        "lv-in18n.baiduSecrectKey": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "pnpm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "pnpm run compile-tests && pnpm run compile && pnpm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.79.0",
+    "@types/glob": "^8.1.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "20.2.5",
+    "@typescript-eslint/eslint-plugin": "^5.59.8",
+    "@typescript-eslint/parser": "^5.59.8",
+    "eslint": "^8.41.0",
+    "glob": "^8.1.0",
+    "mocha": "^10.2.0",
+    "typescript": "^5.1.3",
+    "ts-loader": "^9.4.3",
+    "webpack": "^5.85.0",
+    "webpack-cli": "^5.1.1",
+    "@vscode/test-electron": "^2.3.2"
+  }
+}
