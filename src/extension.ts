@@ -1,26 +1,31 @@
-// The module 'vscode' contains the VS Code extensibility API
-// Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 
-// This method is called when your extension is activated
-// Your extension is activated the very first time the command is executed
+const { window } = vscode
 export function activate(context: vscode.ExtensionContext) {
 
-	// Use the console to output diagnostic information (console.log) and errors (console.error)
-	// This line of code will only be executed once when your extension is activated
-	console.log('Congratulations, your extension "lv-i18n" is now active!');
 
-	// The command has been defined in the package.json file
-	// Now provide the implementation of the command with registerCommand
-	// The commandId parameter must match the command field in package.json
-	let disposable = vscode.commands.registerCommand('lv-i18n.helloWorld', () => {
-		// The code you place here will be executed every time your command is executed
-		// Display a message box to the user
-		vscode.window.showInformationMessage('Hello World from LV i18n!');
+	let disposable = vscode.commands.registerCommand('lv-i18n.helloWorld111', () => {
+		vscode.window.showInformationMessage('Hello World from ...22233!');
 	});
 
+	// 获取页面上的中文，用国际化包裹
+	const translateChinese = vscode.commands.registerCommand('lv-i18n.translateChinese', () => {
+		const activeEditor = window.activeTextEditor
+		window.showInformationMessage('233')
+		if (!activeEditor) return
+
+		// 获取中文
+		const selection = activeEditor.selection
+		const selectedText = activeEditor.document.getText(selection)
+		window.showInformationMessage(selectedText)
+		
+	});
+
+	// 生成对应的翻译文档
+
+
 	context.subscriptions.push(disposable);
+	context.subscriptions.push(translateChinese);
 }
 
-// This method is called when your extension is deactivated
 export function deactivate() {}
