@@ -49,10 +49,29 @@
           "type": "string",
           "description": "百度翻译appid"
         },
-        "lv-in18n.baiduSecrectKey": {
+        "lv-in18n.baiduSecretKey": {
           "type": "string"
         }
       }
+    },
+    "menus": {
+      "editor/context": [
+        {
+          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/",
+          "command": "",
+          "group": "1_i18n"
+        },
+        {
+          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/",
+          "command": "",
+          "group": "1_i18n"
+        },
+        {
+          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/",
+          "command": "",
+          "group": "1_i18n"
+        }
+      ]
     }
   },
   "scripts": {
