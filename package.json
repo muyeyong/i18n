@@ -9,17 +9,38 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onCommand:css-helper-plugin.codelensAction",
+    "onLanguage:typescriptreact",
+    "onLanguage:vue",
+    "onLanguage:html",
+    "onLanguage:pug",
+    "onLanguage:javascript",
+    "onLanguage:javascriptreact",
+    "onLanguage:typescript",
+    "onLanguage:json",
+    "onLanguage:yaml",
+    "onLanguage:json5",
+    "onLanguage:dart",
+    "onLanguage:php",
+    "onLanguage:handlebars",
+    "onLanguage:ini",
+    "onLanguage:svelte"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "lv-i18n.helloWorld111",
-        "title": "Hello World"
+        "command": "lv-i18n.extractChinese",
+        "title": "提取中文"
       },
       {
         "command": "lv-i18n.translateChinese",
         "title": "翻译中文"
+      },
+      {
+        "command": "lv-i18n.createConfig",
+        "title": "生成配置"
       }
     ],
     "configuration": {
@@ -67,22 +88,30 @@
     "menus": {
       "editor/context": [
         {
-          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/",
-          "command": "",
-          "group": "1_i18n"
+          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/",
+          "group": "navigation",
+          "submenu": "lvI18n"
+        }
+      ],
+      "lvI18n": [
+        {
+          "command": "lv-i18n.extractChinese",
+          "group": "2_workspace",
+          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
         },
         {
-          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/",
-          "command": "",
-          "group": "1_i18n"
-        },
-        {
-          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/",
-          "command": "",
-          "group": "1_i18n"
+          "command": "lv-i18n.createConfig",
+          "group": "2_workspace",
+          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
         }
       ]
-    }
+    },
+    "submenus": [
+      {
+        "id": "lvI18n",
+        "label": "国际化(Lvi18n)"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "pnpm run package",
@@ -112,6 +141,8 @@
     "webpack-cli": "^5.1.1"
   },
   "dependencies": {
-    "fs-extra": "^11.1.1"
+    "@types/fs-extra": "^11.0.1",
+    "fs-extra": "^11.1.1",
+    "nanoid": "^4.0.2"
   }
 }

@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
+import { I18nProvider } from './codelens/i18nProvider'
+import extractChinese from './extractChinese';
+import createConfig from './createConfig';
 
 const { window } = vscode
 export function activate(context: vscode.ExtensionContext) {
 
 
-	let disposable = vscode.commands.registerCommand('lv-i18n.helloWorld111', () => {
-		vscode.window.showInformationMessage('Hello World from ...22233!');
-	});
+	extractChinese(context)
+	createConfig(context)
 
 	// 获取页面上的中文，用国际化包裹
 	const translateChinese = vscode.commands.registerCommand('lv-i18n.translateChinese', () => {
@@ -23,8 +25,9 @@ export function activate(context: vscode.ExtensionContext) {
 
 	// 生成对应的翻译文档
 
+	// codelens
+	vscode.languages.registerCodeLensProvider(['typescript', 'vue'], new I18nProvider())
 
-	context.subscriptions.push(disposable);
 	context.subscriptions.push(translateChinese);
 }
 
