@@ -1,0 +1,11 @@
+{
+    "localeTranslatePath": "",
+    "remoteTranslatePath": "",
+    "translatedPath": "src/local/config",
+    "languages": [
+        "enUS",
+        "zhCN"],
+    "i18n": ["t", "$t"],
+    "baiduAppid": "",
+    "baiduSecretKey": ""
+}

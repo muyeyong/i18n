@@ -1,11 +1,11 @@
 import { lstatSync, accessSync, constants } from 'fs-extra'
-import { sep } from 'path'
+import { sep, join } from 'path'
+import { PACKAGE_JSON } from '../constants/file'
 
-export const PACKAGE_JSON = 'package.json'
 
-export const idFileExisted = (filaName: string) => {
+export const isFileExisted = (filaName: string) => {
     try {
-        accessSync(filaName, constants.R_OK | constants.W_OK)
+        accessSync(filaName)
         return true
     } catch (error) {
         return false
@@ -16,19 +16,16 @@ export const findRootPath = (path: string): string => {
     if (path === '') {
         return ''
     }
-    const { isDirectory } = lstatSync(path)
+    const stat = lstatSync(path)
     const parentPath = path.split(sep).filter(item => item !== '').slice(0, -1).join(sep)
-    console.log(lstatSync(path))
-    return ''
-    // console.log('isDirectory()', isDirectory())
-    // if (isDirectory()) {
-    //     if (idFileExisted(PACKAGE_JSON)) {
-    //         return path
-    //     }
-    //     else {
-    //         return findRootPath(parentPath)
-    //     }
-    // } else {
-    //     return findRootPath(parentPath)
-    // }
+    if (stat.isDirectory()) {
+        if (isFileExisted(join(path, PACKAGE_JSON))) {
+            return path
+        }
+        else {
+            return findRootPath(parentPath)
+        }
+    } else {
+        return findRootPath(parentPath)
+    }
 }
