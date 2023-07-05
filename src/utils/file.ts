@@ -1,6 +1,6 @@
-import { lstatSync, accessSync, constants } from 'fs-extra'
+import { lstatSync, accessSync, readJSONSync } from 'fs-extra'
 import { sep, join } from 'path'
-import { PACKAGE_JSON } from '../constants/file'
+import { PACKAGE_JSON, LV18N_CONFIG } from '../constants/file'
 
 
 export const isFileExisted = (filaName: string) => {
@@ -27,5 +27,16 @@ export const findRootPath = (path: string): string => {
         }
     } else {
         return findRootPath(parentPath)
+    }
+}
+
+// 读取配置文件
+export const readConfig = (path: string) => { 
+    const rootPath = findRootPath(path)
+    const configPath = join(rootPath, LV18N_CONFIG)
+    if (rootPath !== '' && isFileExisted(configPath)) {
+        return readJSONSync(configPath)
+    } else {
+        return null
     }
 }

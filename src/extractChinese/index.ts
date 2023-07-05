@@ -1,23 +1,37 @@
-import * as vscode from 'vscode'
-import { nanoid } from 'nanoid'
+import * as vscode from 'vscode';
+import { nanoid } from 'nanoid';
+import { readConfig, findRootPath } from '../utils/file';
+import { writeFileSync } from 'fs-extra';
 
-const extract = () => {
-    // /([\u4E00-\u9FA5]|[\uFE30-\uFFA0])+/
-    const regex = new RegExp(/([\u4e00-\u9fa5]|[\u3001-\u3011])+/g)
-    const text = vscode.window.activeTextEditor?.document.getText() || ''
-    let matches
-    while((matches = regex.exec(text)) !== null) {
-        console.log(matches[0])
-        const key = nanoid(6)
-      
-        // 生成唯一的key： 文件路径 + id | id
-        // 替换中文
+const extract = (params: any) => {
+    const regex = new RegExp(/([^\n ]*)=["|']([\u4e00-\u9fa5]+|[\u3001-\u3011]+)['|"]/g);
+    // 正则配置: title="测试今后"
+    const regex2 = new RegExp(/([\u4e00-\u9fa5]+|[\u3001-\u3011]+)/g);
+    let text = vscode.window.activeTextEditor?.document.getText() || '';
+
+    let matches;
+    try {
+        const config = readConfig(params.fsPath);
+        if (!config) {
+            vscode.window.showErrorMessage('请先生成配置文件');
+        } else {
+            const { i18n, languages, translatedPath } = config; 
+            const rootPath = findRootPath(params.fsPath);
+            while((matches = regex.exec(text)) !== null) { 
+                text = text.substring(0, matches.index) + `:${matches[1]}` + text.substring(matches.index + matches[1].length, matches.index + matches[0].length - matches[2].length - 1) + `$t('${nanoid(6)}')` + text.substring(matches.index + matches[0].length -1)
+            }
+            while((matches = regex2.exec(text)) !== null) {
+                text = text.substring(0, matches.index) + `{{ $t('${nanoid(6)}')}}` + text.substring(matches.index + matches[1].length)
+            }
+            writeFileSync(params.fsPath, text)
+        }
+       
+    } catch (error) {
+        
     }
-      // 读取环境变量，建立一个文件夹放匹配的结果，都需要什么语言的
-      
-    // console.log(text)
-}
+    
+};
 
 export default function extractChinese(context: vscode.ExtensionContext) {
-    context.subscriptions.push(vscode.commands.registerCommand("lv-i18n.extractChinese", extract))
+    context.subscriptions.push(vscode.commands.registerCommand("lv-i18n.extractChinese", extract));
 }
