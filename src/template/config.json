@@ -7,5 +7,6 @@
         "zhCN"],
     "i18n": ["t", "$t"],
     "baiduAppid": "",
-    "baiduSecretKey": ""
+    "baiduSecretKey": "",
+    "preferredLanguage": "zhCN"
 }

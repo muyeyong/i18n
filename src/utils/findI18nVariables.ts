@@ -1,4 +1,6 @@
-import * as fs from 'fs';
+import { readConfig, findRootPath } from './file'
+import { readJSONSync } from 'fs-extra'
+import { join } from 'path'
 
 const LESS_VARIABLES_REG =  /(\@[^:\s]+):[\s]*([^;]+);/g;
 
@@ -7,15 +9,13 @@ interface IVariables {
 }
 
 // 根据需要展示的语言和路径获取
-export default function findI18nVariables(lessPath: string){
-  const variables:IVariables = {};
-//   if(fs.existsSync(lessPath)){
-//     const content = fs.readFileSync(lessPath, 'utf-8');
-//     let matched;
-//     while((matched = LESS_VARIABLES_REG.exec(content)) !== null){
-//       variables[matched[1]] = matched[2];
-//     }
-//   }
+export default function findI18nVariables(path: string){
+  const config = readConfig(path)
+  const rootPath = findRootPath(path)
+  if ( config ) {
+    const { preferredLanguage, translatedPath } = config
+   return readJSONSync(join(rootPath, translatedPath, `${preferredLanguage}.json` ))
+  }
+  return {}
 
-  return [{ test: '测试'}];
 }

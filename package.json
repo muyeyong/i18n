@@ -35,7 +35,7 @@
         "title": "提取中文"
       },
       {
-        "command": "lv-i18n.translateChinese",
+        "command": "lv-i18n.translate",
         "title": "翻译中文"
       },
       {
@@ -47,41 +47,15 @@
       "type": "object",
       "title": "lv-in18n",
       "properties": {
-        "lv-in18n.localeTranslatePath": {
+        "lv-in18n.preferredLanguage": {
           "type": "string",
-          "description": "本地翻译文件路径"
-        },
-        "lv-in18n.remoteTranslatePath": {
-          "type": "string",
-          "description": "远程翻译文件地址"
-        },
-        "lv-in18n.translatedPath": {
-          "type": "string",
-          "default": "**/src/i18n/**",
-          "description": "翻译文件路径"
-        },
-        "lv-i18n.splitFile": {
-          "type": "boolean",
-          "default": "true",
-          "description": "是否拆分翻译文件"
+          "default": "zhCN",
+          "description": "首选语言"
         },
         "lv-i18n.languages": {
           "type": "array",
-          "default": "['en', 'zh']",
+          "default": "['enUS', 'zhCN']",
           "description": "翻译语言集合"
-        },
-        "lv-i18n.i18n": {
-          "type": "string",
-          "default": "$t",
-          "description": "国际化包裹"
-        },
-        "lv-i18n.baiduAppid": {
-          "type": "string",
-          "description": "百度翻译appid"
-        },
-        "lv-in18n.baiduSecretKey": {
-          "type": "string",
-          "description": "百度翻译SecretKey"
         }
       }
     },
@@ -103,7 +77,13 @@
           "command": "lv-i18n.createConfig",
           "group": "2_workspace",
           "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
+        },
+        {
+          "command": "lv-i18n.translate",
+          "group": "2_workspace",
+          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx|.json/"
         }
+        
       ]
     },
     "submenus": [

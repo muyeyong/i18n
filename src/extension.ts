@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { I18nProvider } from './codelens/i18nProvider'
 import extractChinese from './extractChinese';
 import createConfig from './createConfig';
+import translate from './translate'
 
 const { window } = vscode
 export function activate(context: vscode.ExtensionContext) {
@@ -9,6 +10,7 @@ export function activate(context: vscode.ExtensionContext) {
 
 	extractChinese(context)
 	createConfig(context)
+	translate(context)
 
 	// 获取页面上的中文，用国际化包裹
 	const translateChinese = vscode.commands.registerCommand('lv-i18n.translateChinese', () => {
