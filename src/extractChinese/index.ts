@@ -3,6 +3,8 @@ import { nanoid } from 'nanoid';
 import { readConfig, findRootPath } from '../utils/file';
 import { writeFileSync, ensureFileSync } from 'fs-extra';
 import { join } from 'path'
+import { tsquery } from '@phenomnomnominal/tsquery'
+import { compileTemplate, compileScript } from '@vue/compiler-sfc'
 
 const generateLanguageFiles = (languages: Array<string>, path: string) => {
     languages.forEach(lan => ensureFileSync(join(path, `${lan}.json`)))
@@ -13,7 +15,13 @@ const extract = (params: any) => {
     // 正则配置: title="测试今后"
     const regex2 = new RegExp(/([\u4e00-\u9fa5]+|[\u3001-\u3011]+)/g);
     let text = vscode.window.activeTextEditor?.document.getText() || '';
-
+    const scriptTag = /<script.*?>([\s\S]*?)<\/script>/gi.exec(text)?.[1]
+    if (!scriptTag) return
+    const ats = tsquery.ast(scriptTag)
+    console.log('2333', ats)
+    // const nodes = tsquery(ats, 'StringLiteral')
+    // console.log('2333', nodes)
+    // return
     let matches;
     try {
         const config = readConfig(params.fsPath);
