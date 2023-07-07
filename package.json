@@ -121,6 +121,7 @@
     "webpack-cli": "^5.1.1"
   },
   "dependencies": {
+    "@phenomnomnominal/tsquery": "^5.0.1",
     "@types/fs-extra": "^11.0.1",
     "@vue/compiler-sfc": "^3.3.4",
     "fs-extra": "^11.1.1",
