@@ -2,91 +2,51 @@ import * as vscode from 'vscode';
 import { nanoid } from 'nanoid';
 import { readConfig, findRootPath } from '../utils/file';
 import { writeFileSync, ensureFileSync } from 'fs-extra';
-import { join } from 'path'
-import { tsquery } from '@phenomnomnominal/tsquery'
-import { compileTemplate, compileScript, parse, SFCParseResult } from '@vue/compiler-sfc'
-import * as ts from 'typescript';
+import { join } from 'path';
+import { compileTemplate, compileScript, parse, SFCParseResult } from '@vue/compiler-sfc';
+import { includeChinese } from '../utils/lan';
+import { parseScript } from './parseScript'
+
+
+/* 
+    变量声明：
+        1:普通变量声明: const let var 
+        2:箭头函数
+        3: 组合式: 1+1 1+2?
+ */
 
 const generateLanguageFiles = (languages: Array<string>, path: string) => {
     languages.forEach(lan => ensureFileSync(join(path, `${lan}.json`)));
 };
 
-const parseScript = (parsed: SFCParseResult) => {
-    const script = compileScript(parsed.descriptor, { id: '456' })
-    script.scriptSetupAst?.forEach(node => {
-        if (node.type === 'VariableDeclaration') {
-            // 可能是简单的变量声明 也可能是函数声明
-            node.declarations.forEach(declaration => {
-                if (declaration.type === 'VariableDeclarator') {
-                    if (declaration.init?.type === 'StringLiteral') {
-                        const params = declaration.init.value
-                    } else if (declaration.init?.type === 'ArrowFunctionExpression') {
-                        // 处理箭头函数
-                        const body = declaration.init.body as any
-                        body.body.forEach((node: any) => {
-                            if (node.type === 'ReturnStatement') {
-                                // 处理返回值
-                                const params = node.argument.value
-                            } else if (node.type === 'VariableDeclaration') {
-                                // 处理变量声明
-                            }
-                        })
 
-                    }
-                }
-                // 处理FunctionDeclaration
-            })
-
-        }
-    })
-}
 
 const extract = (params: any) => {
+    const chineseMap = new Map<string, string>()
     const regex = new RegExp(/([^\n ]*)=["|']([\u4e00-\u9fa5]+|[\u3001-\u3011]+)['|"]/g);
     // 正则配置: title="测试今后"
     const regex2 = new RegExp(/([\u4e00-\u9fa5]+|[\u3001-\u3011]+)/g);
     let text = vscode.window.activeTextEditor?.document.getText() || '';
-    const parsed = parse(text, { filename: 'example.vue' })
-    const template = compileTemplate({ source: parsed.descriptor.template?.content!, filename: 'example.vue', id: '123' })
-    const script = compileScript(parsed.descriptor, { id: '1456' })
+    const parsed = parse(text, { filename: 'example.vue' });
+    const template = compileTemplate({ source: parsed.descriptor.template?.content!, filename: 'example.vue', id: '123' });
+    const script = compileScript(parsed.descriptor, { id: '1456' });
 
-    console.log('2333', script)
+    console.log(template)
+    // console.log(script)
 
-    // const scriptTag = /<script.*?>([\s\S]*?)<\/script>/gi.exec(text)?.[1]
-    // if (!scriptTag) return
-    // const ats = tsquery.ast(scriptTag)
-    // console.log('2333', ats)
-    // const nodes = tsquery(ats, 'StringLiteral')
-    // console.log('2333', nodes)
-    // return
-    //    const ast =  tsquery.ast(text);
-    //    const sourceFile = ts.createSourceFile(
-    //     'example.vue',
-    //     text,
-    //     ts.ScriptTarget.Latest,
-    //     true,
-    //     ts.ScriptKind.TSX
-    //   );
-    //   console.log(sourceFile);
-    //   const variables = tsquery(
-    //     sourceFile,
-    //     'VariableDeclaration'
-    //   ) as ts.VariableDeclaration[];
-
-    //   // 输出变量名
-    //   variables.forEach(variable => {
-    //     console.log(variable.name.getText());
-    //   });
     let matches;
     try {
         const config = readConfig(params.fsPath);
         if (!config) {
             vscode.window.showErrorMessage('请先生成配置文件');
         } else {
+            const rootPath = findRootPath(params.fsPath);
+            parseScript(parsed, config, rootPath)
+           
             const { i18n, languages, translatedPath } = config;
-            // const rootPath = findRootPath(params.fsPath);
+           
             // // 根据配置文件的languages 和 translatedPath 生成提取目录
-            // generateLanguageFiles(languages, join(rootPath, translatedPath))
+            generateLanguageFiles(languages, join(rootPath, translatedPath))
             // // 还需要生成 中文 - 英文/other文件？
             // const chineseMap = new Map<string, string>()
             // while((matches = regex.exec(text)) !== null) { 
@@ -109,23 +69,10 @@ const extract = (params: any) => {
             // // 参考： https://github.com/Letki/help-me-i18n https://github.com/aaronlamz/vue-i18n-helper/blob/main/src/commands/extract.ts
             // writeFileSync(params.fsPath, text)
             // // 根据map写入翻译
-            // const chineseJson: Record<string, string> = {}
-            // const otherLanguageJson: Record<string, string> = {}
-            // for(const [key, value] of chineseMap.entries()) {
-            //     chineseJson[value] = key
-            //     otherLanguageJson[value] = ''
-            // }
-            // languages.forEach((lan: string) => {
-            //     if(lan.toLocaleLowerCase().includes('zh')) {
-            //         writeFileSync(join(rootPath, translatedPath, `${lan}.json`), JSON.stringify(chineseJson, null, 4))
-            //     } else {
-            //         writeFileSync(join(rootPath, translatedPath, `${lan}.json`), JSON.stringify(otherLanguageJson, null, 4))
-            //     }
-            // })
+           
         }
 
     } catch (error) {
-
     }
 
 };
