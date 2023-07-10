@@ -10,10 +10,12 @@ export function parseTSX() {
     plugins: ['jsx', 'typescript']
   });
 
+  console.log('ast', ast)
   const result: any = [];
   const chineseStringRegexp = /[\u4e00-\u9fa5]+/;
   const visitor = {
     StringLiteral(path: any) {
+      console.log('1')
       if (chineseStringRegexp.test(path.node.value)) {
         const loc = path.node.loc;
         result.push({
@@ -24,6 +26,7 @@ export function parseTSX() {
       }
     },
     JSXText(path: any) {
+      console.log('2')
       if (chineseStringRegexp.test(path.node.value)) {
         const loc = path.node.loc;
         result.push({
@@ -52,6 +55,7 @@ export function parseTSX() {
         // 如果是render方法，需要使用新的访问者来查找包含中文的字符串
         const renderVisitor = {
           StringLiteral(path: any) {
+            console.log('3')
             if (chineseStringRegexp.test(path.node.value)) {
               const loc = path.node.loc;
               result.push({
@@ -62,6 +66,7 @@ export function parseTSX() {
             }
           },
           JSXText(path: any) {
+            console.log('4')
             if (chineseStringRegexp.test(path.node.value)) {
               const loc = path.node.loc;
               result.push({
@@ -76,7 +81,7 @@ export function parseTSX() {
       }
     },
     'ClassMethod:exit'(path: any) {
-      if (path.node.key.name === 'render') {
+      if (path.node.key.name === 'return') {
         isRenderMethod = false;
       }
     },
