@@ -6,6 +6,9 @@ import { join } from 'path';
 import { compileTemplate, compileScript, parse, SFCParseResult } from '@vue/compiler-sfc';
 import { includeChinese } from '../utils/lan';
 import { parseScript } from './parseScript'
+import { parseTemplate } from './parseTemplate'
+import { EditInfo } from '../type';
+import { writeExtractResult } from './writeLan';
 
 
 /* 
@@ -21,17 +24,17 @@ const generateLanguageFiles = (languages: Array<string>, path: string) => {
 
 
 
-const extract = (params: any) => {
+const extract = async (params: any) => {
     const chineseMap = new Map<string, string>()
     const regex = new RegExp(/([^\n ]*)=["|']([\u4e00-\u9fa5]+|[\u3001-\u3011]+)['|"]/g);
     // 正则配置: title="测试今后"
     const regex2 = new RegExp(/([\u4e00-\u9fa5]+|[\u3001-\u3011]+)/g);
     let text = vscode.window.activeTextEditor?.document.getText() || '';
     const parsed = parse(text, { filename: 'example.vue' });
-    const template = compileTemplate({ source: parsed.descriptor.template?.content!, filename: 'example.vue', id: '123' });
-    const script = compileScript(parsed.descriptor, { id: '1456' });
+    // const template = compileTemplate({ source: parsed.descriptor.template?.content!, filename: 'example.vue', id: '123' });
+    // const script = compileScript(parsed.descriptor, { id: '1456' });
 
-    console.log(template)
+    // console.log(template)
     // console.log(script)
 
     let matches;
@@ -41,12 +44,17 @@ const extract = (params: any) => {
             vscode.window.showErrorMessage('请先生成配置文件');
         } else {
             const rootPath = findRootPath(params.fsPath);
-            parseScript(parsed, config, rootPath)
-           
+            const edits: Array<EditInfo> = []
+             const scriptEdit = await parseScript(parsed)
+            const templateEdit = await parseTemplate(parsed)
+
+            console.log(scriptEdit, templateEdit)
+
             const { i18n, languages, translatedPath } = config;
-           
+
             // // 根据配置文件的languages 和 translatedPath 生成提取目录
             generateLanguageFiles(languages, join(rootPath, translatedPath))
+            writeExtractResult([...scriptEdit, ...templateEdit], config, rootPath)
             // // 还需要生成 中文 - 英文/other文件？
             // const chineseMap = new Map<string, string>()
             // while((matches = regex.exec(text)) !== null) { 
@@ -69,7 +77,7 @@ const extract = (params: any) => {
             // // 参考： https://github.com/Letki/help-me-i18n https://github.com/aaronlamz/vue-i18n-helper/blob/main/src/commands/extract.ts
             // writeFileSync(params.fsPath, text)
             // // 根据map写入翻译
-           
+
         }
 
     } catch (error) {

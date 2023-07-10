@@ -2,11 +2,13 @@ import { compileScript, SFCParseResult } from '@vue/compiler-sfc';
 import { includeChinese } from '../utils/lan';
 import * as vscode from 'vscode';
 import { nanoid } from 'nanoid';
-import { Config } from '../type';
+import { Config, EditInfo } from '../type';
 import { writeFileSync, ensureFileSync } from 'fs-extra';
 import { join } from 'path';
+import { NODE_TYPE } from '../constants/template';
 
-let edits: Array<{ value: any, loc: any }> = []
+let edits: Array<EditInfo> = []
+let lineOffset = 0
 
 
 /* 
@@ -23,7 +25,15 @@ const parseStringLiteral = async (node: any) => {
     return new Promise((resolve) => {
         const { value, loc } = node
         if (includeChinese(value)) {
-            edits.push({ value, loc })
+            edits.push({
+                value,
+                loc: {
+                    ...loc,
+                    start: { ...loc.start, line: loc.start.line + lineOffset },
+                    end: { ...loc.end, line: loc.start.line + lineOffset }
+                },
+                type: NODE_TYPE.VARIABLE
+            })
         }
         resolve(true)
     })
@@ -52,13 +62,11 @@ const parseBinaryExpression = async (node: any) => {
 const parseNormalVariable = async (declarations: any) => {
     for (let i = 0; i < declarations.length; i += 1) {
         const { init } = declarations[i];
+        if (!init) continue
         if (init.type === 'StringLiteral') {
             await parseStringLiteral(init)
-        } else if (init.type === 'BinaryExpression') {
-            await parseBinaryExpression(init.left)
-            await parseBinaryExpression(init.right)
-        } else if (init.type === 'ArrowFunctionExpression' || init.type === 'FunctionDeclaration') {
-            await parseFunctionExpression(init)
+        } else {
+            await parseAll(init)
         }
     }
 };
@@ -74,16 +82,26 @@ const parseFunctionExpression = async (node: any) => {
     }
 }
 
-// 解析返回类型
-const parseOutInStatement = async (node: any) => {
-    if (node.left || node.right) {
-       await parseBinaryExpression(node)
-    } else if (node.type === 'StringLiteral') {
-       await parseStringLiteral(node)
+const parseCallExpression = async (node: any) => {
+    for (let i = 0; i < node.arguments.length; i += 1) {
+        await parseAll(node.arguments[i])
     }
 }
 
+// 解析返回类型
+const parseOutInStatement = async (node: any) => {
+    if (node.type === 'StringLiteral') {
+        await parseStringLiteral(node)
+    } else {
+        await parseAll(node)
+    }
+}
 
+const parseObjectExpression = async (node: any) => {
+    for (let i = 0; i < node.properties.length; i += 1) {
+        await parseAll(node.properties[i])
+    }
+}
 
 // 解析所有类型
 const parseAll = async (node: any) => {
@@ -91,54 +109,38 @@ const parseAll = async (node: any) => {
         await parseNormalVariable(node.declarations)
     } else if (node.type === 'ArrowFunctionExpression') {
         await parseFunctionExpression(node)
-    } else if(node.type === 'ReturnStatement') {
+    } else if (node.type === 'ReturnStatement') {
         await parseOutInStatement(node.argument)
     } else if (node.type === 'FunctionDeclaration') {
         await parseFunctionExpression(node)
     } else if (node.type === 'AssignmentPattern') {
         await parseOutInStatement(node)
+    } else if (node.type === 'StringLiteral') {
+        await parseStringLiteral(node)
+    } else if (node.type === 'ObjectProperty') {
+        await parseAll(node.value)
+    } else if (node.type === 'ObjectExpression') {
+        await parseObjectExpression(node)
+    } else if (node.type === 'ExpressionStatement') {
+        await parseAll(node.expression)
+    } else if (node.type === 'CallExpression') {
+        await parseCallExpression(node)
+    } else if (node.type === 'BinaryExpression') {
+        await parseBinaryExpression(node.left)
+        await parseBinaryExpression(node.right)
     }
 }
 
-export const parseScript = async (parsed: SFCParseResult, config: Config, rootPath: string) => {
-    edits = []
-    const {  languages, translatedPath } = config
-    const script = compileScript(parsed.descriptor, { id: '456' });
-    if (!script.scriptSetupAst) return
-    for (let i = 0; i < script.scriptSetupAst.length; i += 1) {
-        await parseAll(script.scriptSetupAst[i])
-    }
-    // TODO 根据文件初始化
-    const chineseMap = new Map<string, string>() 
-    const activeTextEditor = vscode.window.activeTextEditor
-                activeTextEditor?.edit(async (editBuilder) => {
-                    for (const { value, loc } of edits) {
-                        let flag = chineseMap.get(value)
-                            if (!flag) {
-                                flag = nanoid(6)
-                                chineseMap.set(value, flag)
-                            }
-                        const { start, end } = loc
-                         editBuilder.replace(
-                            new vscode.Range(
-                                new vscode.Position(start.line - 1, start.column),
-                                new vscode.Position(end.line - 1, end.column)
-                            ),
-                            `$t('${flag}')`) // 生成uuid
-                    }
-                })
-    const chineseJson: Record<string, string> = {}
-                const otherLanguageJson: Record<string, string> = {}
-                for(const [key, value] of chineseMap.entries()) {
-                    chineseJson[value] = key
-                    otherLanguageJson[value] = ''
-                }
-                languages.forEach((lan: string) => {
-                    if(lan.toLocaleLowerCase().includes('zh')) {
-                        writeFileSync(join(rootPath, translatedPath, `${lan}.json`), JSON.stringify(chineseJson, null, 4))
-                    } else {
-                        writeFileSync(join(rootPath, translatedPath, `${lan}.json`), JSON.stringify(otherLanguageJson, null, 4))
-                    }
-                })
+export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> => {
+    return new Promise(async (resolve) => {
+        edits = []
+        const script = compileScript(parsed.descriptor, { id: '456' });
+        if (!script.scriptSetupAst) return
+        console.log(script.scriptSetupAst)
+        lineOffset = script.loc.start.line > 0 ? script.loc.start.line - 1 : 0
+        for (let i = 0; i < script.scriptSetupAst.length; i += 1) {
+            await parseAll(script.scriptSetupAst[i])
+        }
+        resolve(edits)
+    })
 };
-
