@@ -11,5 +11,6 @@ export enum NODE_TYPE {
     TSX_TEXT = 'TSX_TEXT',
     /** tsx 变量 */
     TSX_VARIABLE = 'TSX_VARIABLE',
-
+    /** ts变量 */
+    TS_VARIABLE = 'TS_VARIABLE'
 }

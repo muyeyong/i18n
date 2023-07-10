@@ -10,6 +10,7 @@ import { readChinese, reverseDependence } from '../utils/file';
 // 根据type返回取代的字符串
 const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: string ) => {
     switch (type) {
+        case NODE_TYPE.TS_VARIABLE:
         case NODE_TYPE.VARIABLE:
             return `${i18n}('${flag}')`
         case NODE_TYPE.TEXT:
@@ -18,6 +19,7 @@ const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: st
             return `:${name}="${i18n}('${flag}')"`
         case NODE_TYPE.TSX_ATTRIBUTE:
             return `${name}={${i18n}('${flag}')}`
+            case NODE_TYPE.TSX_VARIABLE:
         case NODE_TYPE.TSX_TEXT:
             return `{${i18n}('${flag}')}}`
         default:

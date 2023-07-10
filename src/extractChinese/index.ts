@@ -1,15 +1,14 @@
 import * as vscode from 'vscode';
-import { nanoid } from 'nanoid';
 import { readConfig, findRootPath } from '../utils/file';
-import { writeFileSync, ensureFileSync } from 'fs-extra';
+import { ensureFileSync } from 'fs-extra';
 import { join } from 'path';
 import { parse } from '@vue/compiler-sfc';
-import { parseScript } from './parseScript'
-import { parseTemplate } from './parseTemplate'
 import { EditInfo } from '../type';
 import { writeExtractResult } from './writeLan';
 import { parseVue } from './parseVue';
 import { getFileExtension } from '../utils/common';
+import { parseTS } from './parseTS'
+import { parseTSX } from './parseTSX'
 
 
 /* 
@@ -38,9 +37,12 @@ const extract = async (params: any) => {
            const fileExtension = getFileExtension(params.path).toLocaleLowerCase()
             if (fileExtension === 'vue') {
                  result = await parseVue()
-            } else if (['ts', 'js', 'tsx', 'jsx'].includes(fileExtension)) {
-
-            } else {
+            } else if (['ts', 'js'].includes(fileExtension)) {
+                result = parseTS()
+            } else if(['tsx', 'jsx'].includes(fileExtension)) {
+                parseTSX()
+            }
+             else {
                 vscode.window.showErrorMessage('暂不支持该文件类型');
                 return
             }
