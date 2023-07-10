@@ -1,11 +1,8 @@
 import { compileScript, SFCParseResult } from '@vue/compiler-sfc';
 import { includeChinese } from '../utils/lan';
-import * as vscode from 'vscode';
-import { nanoid } from 'nanoid';
-import { Config, EditInfo } from '../type';
-import { writeFileSync, ensureFileSync } from 'fs-extra';
-import { join } from 'path';
+import { EditInfo } from '../type';
 import { NODE_TYPE } from '../constants/template';
+
 
 let edits: Array<EditInfo> = []
 let lineOffset = 0
@@ -133,7 +130,7 @@ const parseAll = async (node: any) => {
 
 export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> => {
     return new Promise(async (resolve) => {
-        edits = []
+        edits = [] 
         const script = compileScript(parsed.descriptor, { id: '456' });
         if (!script.scriptSetupAst) return
         console.log(script.scriptSetupAst)

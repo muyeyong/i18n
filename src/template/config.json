@@ -8,5 +8,10 @@
     "i18n": ["t", "$t"],
     "baiduAppid": "",
     "baiduSecretKey": "",
-    "preferredLanguage": "zhCN"
+    "preferredLanguage": "zhCN",
+    "preferredI18n": "$t",
+    "languageMap": {
+        "enUS": "en",
+        "zhCN": "zh"
+    }
 }

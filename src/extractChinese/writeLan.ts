@@ -2,9 +2,10 @@
 import { Config, EditInfo } from "../type";
 import * as vscode from 'vscode'
 import { nanoid } from "nanoid";
-import { writeFileSync } from "fs-extra";
+import { readJSONSync, writeFileSync } from "fs-extra";
 import { join } from "path";
 import { NODE_TYPE } from "../constants/template";
+import { readChinese, reverseDependence } from '../utils/file';
 
 // 根据type返回取代的字符串
 const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: string ) => {
@@ -20,9 +21,13 @@ const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: st
     }
 }
 
-export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootPath: string) => {
+export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootPath: string, currPath: string) => {
     const { languages, translatedPath, preferredI18n } = config
     const chineseMap = new Map<string, string>()
+    const existChineseJson = readChinese(currPath)
+    for(const key in existChineseJson) {
+        chineseMap.set(existChineseJson[key], key)
+    }
     const activeTextEditor = vscode.window.activeTextEditor
     activeTextEditor?.edit(async (editBuilder) => {
         for (const { value, loc, type, name } of edits) {
@@ -37,10 +42,10 @@ export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootP
                     new vscode.Position(start.line - 1, start.column),
                     new vscode.Position(end.line - 1, end.column)
                 ),
-                getReplaceString(type, preferredI18n, flag, name) )// 生成uuid
+                getReplaceString(type, preferredI18n, flag, name) )
         }
     })
-    const chineseJson: Record<string, string> = {}
+    const chineseJson: Record<string, string> = existChineseJson
     const otherLanguageJson: Record<string, string> = {}
     for (const [key, value] of chineseMap.entries()) {
         chineseJson[value] = key
@@ -50,7 +55,8 @@ export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootP
         if (lan.toLocaleLowerCase().includes('zh')) {
             writeFileSync(join(rootPath, translatedPath, `${lan}.json`), JSON.stringify(chineseJson, null, 4))
         } else {
-            writeFileSync(join(rootPath, translatedPath, `${lan}.json`), JSON.stringify(otherLanguageJson, null, 4))
+           const existOtherLangue =  readJSONSync(join(rootPath, translatedPath, `${lan}.json`))
+            writeFileSync(join(rootPath, translatedPath, `${lan}.json`), JSON.stringify({...otherLanguageJson, ...existOtherLangue, }, null, 4))
         }
     })
 }

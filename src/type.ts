@@ -9,7 +9,8 @@ export interface Config {
     baiduAppid: string,
     baiduSecretKey: string,
     preferredLanguage: string
-    preferredI18n: string
+    preferredI18n: string,
+    languageMap: Record<string, string>
 }
 
 export interface EditInfo {
