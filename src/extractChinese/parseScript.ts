@@ -3,10 +3,8 @@ import { includeChinese } from '../utils/lan';
 import { EditInfo } from '../type';
 import { NODE_TYPE } from '../constants/template';
 
-
 let edits: Array<EditInfo> = []
 let lineOffset = 0
-
 
 /* 
     变量声明：
@@ -27,7 +25,7 @@ const parseStringLiteral = async (node: any) => {
                 loc: {
                     ...loc,
                     start: { ...loc.start, line: loc.start.line + lineOffset },
-                    end: { ...loc.end, line: loc.start.line + lineOffset }
+                    end: { ...loc.end, line: loc.end.line + lineOffset }
                 },
                 type: NODE_TYPE.VARIABLE
             })
@@ -70,12 +68,18 @@ const parseNormalVariable = async (declarations: any) => {
 
 // 解析箭头函数
 const parseFunctionExpression = async (node: any) => {
-    const { body: { body }, params } = node
-    for (let i = 0; i < body.length; i += 1) {
-        await parseAll(body[i])
-    }
-    for (let i = 0; i < params.length; i += 1) {
-        await parseAll(params[i])
+    // CallExpression
+    // BlockStatement
+    const { body, params, } = node
+    if (body.type === 'CallExpression') { 
+        await parseCallExpression(node.body)
+    } else {
+        for (let i = 0; i < body.body.length; i += 1) {
+            await parseAll(body.body[i])
+        }
+        for (let i = 0; i < params.length; i += 1) {
+            await parseAll(params[i])
+        }
     }
 }
 
@@ -100,6 +104,70 @@ const parseObjectExpression = async (node: any) => {
     }
 }
 
+
+// 解析jsxtext
+const parseJSXText = async (node: any) => {
+    return new Promise((resolve) => {
+        const { value, loc } = node
+        if (includeChinese(node.value)) {
+            edits.push({
+                value,
+                loc: {
+                    ...loc,
+                    start: { ...loc.start, line: loc.start.line + lineOffset },
+                    end: { ...loc.end, line: loc.end.line + lineOffset }
+                },
+                type: NODE_TYPE.TSX_TEXT
+            })
+        }
+        resolve(true)
+    })
+  
+}
+
+// 解析jsxElement
+const parseJSXElement = async (node: any) => {
+    for(let i = 0; i < node.children.length; i += 1) {
+        await parseAll(node.children[i])
+    }
+    await parseAll(node.openingElement)
+}
+
+// 解析jsxOpeningElement
+const parseJSXOpeningElement = async (node: any) => {
+    for(let i = 0; i < node.attributes.length; i += 1) {
+        await parseAll(node.attributes[i])
+    }
+}
+
+// 解析JSXAttribute
+const parseJSXAttribute = async (node: any) => {
+    return new Promise((resolve) => {
+        const { name, value, loc } = node
+        if (value.type === 'StringLiteral' && includeChinese(value.value)) {
+           edits.push({
+            value: value.value,
+            loc: {
+                ...loc,
+                start: { ...loc.start, line: loc.start.line + lineOffset },
+                end: { ...loc.end, line: loc.end.line + lineOffset }
+            },
+            name: name.name,
+            type: NODE_TYPE.TSX_ATTRIBUTE
+         })
+         resolve(true)
+        } else {
+            resolve(parseAll(value.expression))
+        }
+       
+    })
+  
+}
+
+// 解析JSXExpressionContainer
+const parseJSXExpressionContainer = async (node: any) => {
+    await parseAll(node.expression)
+}
 // 解析所有类型
 const parseAll = async (node: any) => {
     if (node.type === 'VariableDeclaration' && ['const', 'let', 'var'].includes(node.kind)) {
@@ -125,6 +193,16 @@ const parseAll = async (node: any) => {
     } else if (node.type === 'BinaryExpression') {
         await parseBinaryExpression(node.left)
         await parseBinaryExpression(node.right)
+    } else if(node.type === 'JSXElement') {
+        await parseJSXElement(node)
+    } else if (node.type === 'JSXText') {
+        await parseJSXText(node)
+    } else if (node.type === 'JSXOpeningElement') {
+        await parseJSXOpeningElement(node)
+    } else if (node.type === 'JSXAttribute') {
+        await parseJSXAttribute(node)
+    } else if (node.type === 'JSXExpressionContainer') {
+        await parseJSXExpressionContainer(node)
     }
 }
 
@@ -133,11 +211,11 @@ export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> =
         edits = [] 
         const script = compileScript(parsed.descriptor, { id: '456' });
         if (!script.scriptSetupAst) return
-        console.log(script.scriptSetupAst)
         lineOffset = script.loc.start.line > 0 ? script.loc.start.line - 1 : 0
         for (let i = 0; i < script.scriptSetupAst.length; i += 1) {
             await parseAll(script.scriptSetupAst[i])
         }
+        console.log(script.scriptSetupAst)
         resolve(edits)
     })
 };

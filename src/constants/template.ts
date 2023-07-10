@@ -4,5 +4,12 @@ export enum NODE_TYPE {
     /** 文本 */
     TEXT = 'TEXT',
     /** 变量 */
-    VARIABLE = 'VARIABLE'
+    VARIABLE = 'VARIABLE',
+    /** tsx 属性 */
+    TSX_ATTRIBUTE = 'TSX_ATTRIBUTE',
+    /** tsx 文本 */
+    TSX_TEXT = 'TSX_TEXT',
+    /** tsx 变量 */
+    TSX_VARIABLE = 'TSX_VARIABLE',
+
 }

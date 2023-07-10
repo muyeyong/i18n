@@ -16,12 +16,17 @@ const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: st
             return `{{ ${i18n}('${flag}')}}`
         case NODE_TYPE.ATTRIBUTE:
             return `:${name}="${i18n}('${flag}')"`
+        case NODE_TYPE.TSX_ATTRIBUTE:
+            return `${name}={${i18n}('${flag}')}`
+        case NODE_TYPE.TSX_TEXT:
+            return `{${i18n}('${flag}')}}`
         default:
             return ''
     }
 }
 
 export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootPath: string, currPath: string) => {
+    console.log('edits 233', edits)
     const { languages, translatedPath, preferredI18n } = config
     const chineseMap = new Map<string, string>()
     const existChineseJson = readChinese(currPath)

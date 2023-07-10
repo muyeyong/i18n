@@ -3,11 +3,13 @@ import { nanoid } from 'nanoid';
 import { readConfig, findRootPath } from '../utils/file';
 import { writeFileSync, ensureFileSync } from 'fs-extra';
 import { join } from 'path';
-import { parse } from '@vue/compiler-sfc';;
+import { parse } from '@vue/compiler-sfc';
 import { parseScript } from './parseScript'
 import { parseTemplate } from './parseTemplate'
 import { EditInfo } from '../type';
 import { writeExtractResult } from './writeLan';
+import { parseVue } from './parseVue';
+import { getFileExtension } from '../utils/common';
 
 
 /* 
@@ -31,13 +33,21 @@ const extract = async (params: any) => {
         if (!config) {
             vscode.window.showErrorMessage('请先生成配置文件');
         } else {
+           let result: Array<EditInfo> = []
+           // 文件后缀
+           const fileExtension = getFileExtension(params.path).toLocaleLowerCase()
+            if (fileExtension === 'vue') {
+                 result = await parseVue()
+            } else if (['ts', 'js', 'tsx', 'jsx'].includes(fileExtension)) {
+
+            } else {
+                vscode.window.showErrorMessage('暂不支持该文件类型');
+                return
+            }
             const rootPath = findRootPath(params.fsPath);
-            const edits: Array<EditInfo> = []
-             const scriptEdit = await parseScript(parsed)
-            const templateEdit = await parseTemplate(parsed)
-            const { i18n, languages, translatedPath } = config;
+            const { languages, translatedPath } = config;
             generateLanguageFiles(languages, join(rootPath, translatedPath))
-            writeExtractResult([...scriptEdit, ...templateEdit], config, rootPath, params.fsPath)
+            writeExtractResult(result, config, rootPath, params.fsPath)
         }
 
     } catch (error) {

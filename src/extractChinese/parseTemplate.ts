@@ -43,7 +43,6 @@ export const parseTemplate = (parsed: SFCParseResult): Promise<EditInfo[]> => {
         edits = []
         const template = compileTemplate({ source: parsed.descriptor.template?.content!, filename: 'example.vue', id: '123' });
         lineOffset = parsed.descriptor.template?.loc.start.line! > 0 ? parsed.descriptor.template?.loc.start.line! - 1 : 0
-        console.log(parsed.descriptor.template?.loc)
         traverse(template.ast);
         resolve(edits)
     })
