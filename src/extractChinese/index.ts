@@ -40,7 +40,7 @@ const extract = async (params: any) => {
             } else if (['ts', 'js'].includes(fileExtension)) {
                 result = parseTS()
             } else if(['tsx', 'jsx'].includes(fileExtension)) {
-                parseTSX()
+               result = parseTSX()
             }
              else {
                 vscode.window.showErrorMessage('暂不支持该文件类型');
