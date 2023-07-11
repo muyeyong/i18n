@@ -48,10 +48,9 @@ const extract = async (params: any) => {
             }
             const rootPath = findRootPath(params.fsPath);
             const { languages, translatedPath } = config;
-            // console.log(config)
-            console.log(result)
-            // generateLanguageFiles(languages, join(rootPath, translatedPath))
-            // writeExtractResult(result, config, rootPath, params.fsPath)
+            generateLanguageFiles(languages, join(rootPath, translatedPath))
+            // TODO 写入文件有问题
+            writeExtractResult(result, config, rootPath, params.fsPath)
         }
 
     } catch (error) {
