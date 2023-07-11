@@ -2,6 +2,7 @@ import { SFCParseResult, compileTemplate } from "@vue/compiler-sfc";
 import { Config, EditInfo } from "../type";
 import { includeChinese } from "../utils/lan";
 import { NODE_TYPE } from "../constants/template";
+import { NodeTypes } from '@vue/compiler-core'
 
 let edits: Array<EditInfo> = []
 let lineOffset = 0
@@ -13,7 +14,7 @@ function traverse(node: any) {
                 value: node.content, loc: {
                     ...node.loc,
                     start: { ...node.loc.start, line: node.loc.start.line + lineOffset, column: node.loc.start.column - 1 },
-                    end: { ...node.loc.end, line: node.loc.start.line + lineOffset, column: node.loc.end.column - 1 }
+                    end: { ...node.loc.end, line: node.loc.end.line + lineOffset, column: node.loc.end.column - 1 }
                 }, type: NODE_TYPE.TEXT
             })
         }
@@ -24,11 +25,30 @@ function traverse(node: any) {
                     value: prop.value.content, loc: {
                         ...prop.loc,
                         start: { ...prop.loc.start, line: prop.loc.start.line + lineOffset, column: prop.loc.start.column - 1 },
-                        end: { ...prop.loc.end, line: prop.loc.start.line + lineOffset, column: prop.loc.end.column - 1 }
+                        end: { ...prop.loc.end, line: prop.loc.end.line + lineOffset, column: prop.loc.end.column - 1 }
                     }, type: NODE_TYPE.ATTRIBUTE, name: prop.name
                 })
             }
         });
+    } else if (node.type === 12) {
+        const content = node.content
+        try {
+            if (content && includeChinese(content.content)) {
+                edits.push({
+                    value: content.content, 
+                    loc: {
+                        ...content.loc,
+                        start: { ...content.loc.start, line: content.loc.start.line + lineOffset, column: content.loc.start.column - 1 },
+                        end: { ...content.loc.end, line: content.loc.end.line + lineOffset, column: content.loc.end.column - 1 }
+                    }, 
+                    type: NODE_TYPE.TEXT
+
+                })
+           }
+        } catch (error) {
+            console.log(error)
+        }
+      
     }
     if (node.children) {
         node.children.forEach(traverse);

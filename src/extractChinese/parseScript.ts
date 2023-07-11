@@ -157,7 +157,7 @@ const parseJSXAttribute = async (node: any) => {
          })
          resolve(true)
         } else {
-            resolve(parseAll(value.expression))
+            resolve(parseAll(value))
         }
        
     })
@@ -167,6 +167,13 @@ const parseJSXAttribute = async (node: any) => {
 // 解析JSXExpressionContainer
 const parseJSXExpressionContainer = async (node: any) => {
     await parseAll(node.expression)
+}
+
+// 解析ArrayExpression
+const parseArrayExpression = async (node: any) => {
+    for(let i = 0; i < node.elements.length; i += 1) {
+        await parseAll(node.elements[i])
+    }
 }
 // 解析所有类型
 const parseAll = async (node: any) => {
@@ -203,6 +210,8 @@ const parseAll = async (node: any) => {
         await parseJSXAttribute(node)
     } else if (node.type === 'JSXExpressionContainer') {
         await parseJSXExpressionContainer(node)
+    } else if (node.type === 'ArrayExpression') {
+        await parseArrayExpression(node)
     }
 }
 
@@ -215,7 +224,7 @@ export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> =
         for (let i = 0; i < script.scriptSetupAst.length; i += 1) {
             await parseAll(script.scriptSetupAst[i])
         }
-        console.log(script.scriptSetupAst)
+        // console.log(script.scriptSetupAst)
         resolve(edits)
     })
 };

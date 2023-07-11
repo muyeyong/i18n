@@ -48,8 +48,10 @@ const extract = async (params: any) => {
             }
             const rootPath = findRootPath(params.fsPath);
             const { languages, translatedPath } = config;
-            generateLanguageFiles(languages, join(rootPath, translatedPath))
-            writeExtractResult(result, config, rootPath, params.fsPath)
+            // console.log(config)
+            console.log(result)
+            // generateLanguageFiles(languages, join(rootPath, translatedPath))
+            // writeExtractResult(result, config, rootPath, params.fsPath)
         }
 
     } catch (error) {
