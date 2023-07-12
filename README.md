@@ -2,7 +2,7 @@
 
 ## 简介
 
- <img src="https://github.com/muyeyong/i18n/blob/main/static/i18n.gif" width="650" height="500" alt="demo"/>
+ <img src="https://github.com/muyeyong/i18n/blob/main/static/i18n.gif" alt="demo"/>
 
 
 1： 先生成配置文件
