@@ -6,6 +6,7 @@
   "engines": {
     "vscode": "^1.37.0"
   },
+  "icon": "static/icon.png",
   "publisher": "muyeyong",
   "categories": [
     "Other"
