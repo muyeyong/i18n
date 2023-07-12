@@ -2,8 +2,8 @@
 
 ## 简介
 
- <img src="https://github.com/muyeyong/i18n/blob/main/static/i18n.gif" alt="demo"/>
 
+![i18n](https://github.com/muyeyong/i18n/assets/35398394/c3dd946c-7eb7-44da-83a9-92bb8833a6c3)
 
 1： 先生成配置文件
 
