@@ -15,7 +15,7 @@ const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: st
         case NODE_TYPE.VARIABLE:
             return `${i18n}('${flag}')`
         case NODE_TYPE.TEXT:
-            return `{{ ${i18n}('${flag}')}}`
+            return `{{ ${i18n}('${flag}' )}}`
         case NODE_TYPE.ATTRIBUTE:
             return `:${name}="${i18n}('${flag}')"`
         case NODE_TYPE.TSX_ATTRIBUTE:

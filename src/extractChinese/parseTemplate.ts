@@ -43,6 +43,8 @@ function traverse(node: any) {
                     type: NODE_TYPE.TEXT
 
                 })
+           } else if (content) {
+                traverse(content)
            }
         } catch (error) {
             console.log(error)
