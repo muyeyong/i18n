@@ -11,6 +11,7 @@ export interface Config {
     preferredLanguage: string
     preferredI18n: string,
     languageMap: Record<string, string>
+    translateDelay?: number
 }
 
 export interface EditInfo {

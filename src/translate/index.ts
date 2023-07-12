@@ -30,7 +30,7 @@ const translate = async (params: any) => {
     // 待翻译列表
     const translateMap: Map<string, Array<string>> = new Map()
     if (config) {
-        const { languages, translatedPath, languageMap, baiduAppid, baiduSecretKey } = config
+        const { languages, translatedPath, languageMap, baiduAppid, baiduSecretKey, translateDelay } = config
         if (baiduAppid === '' || baiduSecretKey === ''|| !baiduAppid || !baiduSecretKey) {
             vscode.window.showWarningMessage('请先配置百度翻译的appid和secretKey')
             return
@@ -68,7 +68,7 @@ const translate = async (params: any) => {
             const otherLanguageJson = otherLanguageJsonMap.get(lan)
             if (!otherLanguageJson) continue
             for (let i = 0; i < texts.length; i++) {
-                const dst = await baidu(texts[i], languageMap[lan], baiduAppid, baiduSecretKey)
+                const dst = await baidu(texts[i], languageMap[lan], baiduAppid, baiduSecretKey, translateDelay || 1000)
                 otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = dst
             }
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 4 })
@@ -80,7 +80,7 @@ const translate = async (params: any) => {
 };
 
 
-const baidu = (query: string, to: string, appid: string, key: string ): Promise<string> => {
+const baidu = (query: string, to: string, appid: string, key: string, translateDelay: number ): Promise<string> => {
     return new Promise(async (resolve) => {
         // TODO 配置文件获取
         const salt = new Date().getTime();
@@ -99,7 +99,7 @@ const baidu = (query: string, to: string, appid: string, key: string ): Promise<
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
         })
-        await sleep(1000)
+        await sleep(translateDelay)
         if (res.data.trans_result?.length > 0) {
             resolve(res.data.trans_result[0].dst)
         } else {

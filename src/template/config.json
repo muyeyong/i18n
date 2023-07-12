@@ -14,5 +14,6 @@
     "languageMap": {
         "en": "en",
         "zh-cn": "zh"
-    }
+    },
+    "translateDelay": 1000
 }
