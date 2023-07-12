@@ -3,7 +3,7 @@
 ## 简介
 
 
-![i18n](https://github.com/muyeyong/i18n/assets/35398394/c3dd946c-7eb7-44da-83a9-92bb8833a6c3)
+![i18n](https://user-images.githubusercontent.com/35398394/252871480-c3dd946c-7eb7-44da-83a9-92bb8833a6c3.gif)
 
 1： 先生成配置文件
 
