@@ -47,6 +47,10 @@
       {
         "command": "lv-i18n.createConfig",
         "title": "生成配置"
+      },
+      {
+        "command": "lv-i18n.replace",
+        "title": "替代选中"
       }
     ],
     "configuration": {
@@ -77,17 +81,17 @@
         {
           "command": "lv-i18n.extractChinese",
           "group": "1_workspace@1",
-          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
+          "when": "resourceFilename =~ /.ts|.js|.vue|.tsx/"
         },
         {
           "command": "lv-i18n.translate",
           "group": "1_workspace@2",
-          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx|.json/"
+          "when": "resourceFilename =~ /.ts|.js|.vue|.tsx|.jsx/"
         },
         {
           "command": "lv-i18n.createConfig",
           "group": "1_workspace@3",
-          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
+          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx|.json/"
         }
       ]
     },
@@ -110,7 +114,6 @@
     "test": "node ./out/test/runTest.js"
   },
   "devDependencies": {
-    "@phenomnomnominal/tsquery": "^5.0.1",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "20.2.5",
@@ -129,7 +132,7 @@
   "dependencies": {
     "@babel/parser": "^7.22.7",
     "@babel/traverse": "^7.22.8",
-    "@phenomnomnominal/tsquery": "^5.0.1",
+    "@phenomnomnominal/tsquery": "^6.1.2",
     "@types/babel__traverse": "^7.20.1",
     "@types/crypto-js": "^4.1.1",
     "@types/fs-extra": "^11.0.1",

@@ -205,6 +205,9 @@ const parseSwitchCase = async (node: any) => {
         await parseAll(node.consequent[i])
     }
 }
+
+// 解析AssignmentPattern
+
 // 解析所有类型
 const parseAll = async (node: any) => {
     if (!node || !node.type) return
@@ -217,7 +220,8 @@ const parseAll = async (node: any) => {
     } else if (node.type === 'FunctionDeclaration') {
         await parseFunctionExpression(node)
     } else if (node.type === 'AssignmentPattern') {
-        await parseOutInStatement(node)
+        await parseBinaryExpression(node.left)
+        await parseBinaryExpression(node.right)
     } else if (node.type === 'StringLiteral') {
         await parseStringLiteral(node)
     } else if (node.type === 'ObjectProperty') {

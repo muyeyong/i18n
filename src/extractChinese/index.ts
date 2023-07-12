@@ -3,7 +3,7 @@ import { readConfig, findRootPath } from '../utils/file';
 import { ensureFileSync } from 'fs-extra';
 import { join } from 'path';
 import { EditInfo } from '../type';
-import { writeExtractResult } from './writeLan';
+import { writeExtractResult } from './replace';
 import { parseVue } from './parseVue';
 import { getFileExtension } from '../utils/common';
 import { parseTS } from './parseTS'
@@ -24,7 +24,6 @@ const generateLanguageFiles = (languages: Array<string>, path: string) => {
 
 
 const extract = async (params: any) => {
-    let text = vscode.window.activeTextEditor?.document.getText() || '';
     try {
         const config = readConfig(params.fsPath);
         if (!config) {
@@ -46,7 +45,6 @@ const extract = async (params: any) => {
             }
             const rootPath = findRootPath(params.fsPath);
             const { languages, translatedPath } = config;
-            generateLanguageFiles(languages, join(rootPath, translatedPath))
             writeExtractResult(result, config, rootPath, params.fsPath)
         }
 

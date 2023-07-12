@@ -14,7 +14,7 @@ export default function findI18nVariables(path: string){
   const rootPath = findRootPath(path)
   if ( config ) {
     const { preferredLanguage, translatedPath } = config
-   return readJSONSync(join(rootPath, translatedPath, `${preferredLanguage}.json` ))
+   return readJSONSync(join(rootPath, translatedPath, `${preferredLanguage}.json` ), { throws: false}) ?? {}
   }
   return {}
 

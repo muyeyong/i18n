@@ -121,6 +121,5 @@ export function parseTSX() {
       result.push(target)
     }
   }
-  // console.log(chineseStrings)
   return result;
 }

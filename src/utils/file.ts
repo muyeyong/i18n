@@ -36,7 +36,7 @@ export const readConfig = (path: string): Config | null => {
     const rootPath = findRootPath(path)
     const configPath = join(rootPath, LV18N_CONFIG)
     if (rootPath !== '' && isFileExisted(configPath)) {
-        return readJSONSync(configPath)
+        return readJSONSync(configPath) || {}
     } else {
         return null
     }
@@ -52,7 +52,7 @@ export const readChinese = (path: string): any => {
         if(rootPath !== '' && zhFileName) {
             const chinesePath = join(rootPath, translatedPath, `${zhFileName}.json`)
             if(isFileExisted(chinesePath)) {
-                return readJSONSync(chinesePath)
+                return readJSONSync(chinesePath, { throws: false }) ?? {}
             } else {
                 return {}
             }
