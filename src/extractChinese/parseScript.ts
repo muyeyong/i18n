@@ -175,8 +175,47 @@ const parseArrayExpression = async (node: any) => {
         await parseAll(node.elements[i])
     }
 }
+
+// 解析 IfStatement
+const parseIfStatement = async (node: any) => {
+    await parseAll(node.test)
+    await parseAll(node.consequent)
+    await parseAll(node.alternate)
+}
+
+// 解析NewExpression
+const parseNewExpression = async (node: any) => {
+    await parseAll(node.callee)
+    for(let i = 0; i < node.arguments.length; i += 1) {
+        await parseAll(node.arguments[i])
+    }
+}
+
+// 解析 BlockStatement
+const parseBlockStatement = async (node: any) => {
+    for(let i = 0; i < node.body.length; i += 1) {
+        await parseAll(node.body[i])
+    }
+}
+
+// 解析 SwitchStatement
+const parseSwitchStatement = async (node: any) => {
+    await parseAll(node.discriminant)
+    for(let i = 0; i < node.cases.length; i += 1) {
+        await parseAll(node.cases[i])
+    }
+}
+
+// 解析 SwitchCase
+const parseSwitchCase = async (node: any) => {
+    await parseAll(node.test)
+    for(let i = 0; i < node.consequent.length; i += 1) {
+        await parseAll(node.consequent[i])
+    }
+}
 // 解析所有类型
 const parseAll = async (node: any) => {
+    if (!node || !node.type) return
     if (node.type === 'VariableDeclaration' && ['const', 'let', 'var'].includes(node.kind)) {
         await parseNormalVariable(node.declarations)
     } else if (node.type === 'ArrowFunctionExpression') {
@@ -212,6 +251,16 @@ const parseAll = async (node: any) => {
         await parseJSXExpressionContainer(node)
     } else if (node.type === 'ArrayExpression') {
         await parseArrayExpression(node)
+    } else if (node.type === 'IfStatement') {
+        await parseIfStatement(node)
+    } else if (node.type === 'NewExpression') {
+        await parseNewExpression(node)
+    } else if(node.type === 'BlockStatement') {
+        parseBlockStatement(node)
+    } else if (node.type === 'SwitchStatement') {
+        parseSwitchStatement(node)
+    } else if (node.type === 'SwitchCase') {
+        parseSwitchCase(node)
     }
 }
 
@@ -224,7 +273,6 @@ export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> =
         for (let i = 0; i < script.scriptSetupAst.length; i += 1) {
             await parseAll(script.scriptSetupAst[i])
         }
-        // console.log(script.scriptSetupAst)
         resolve(edits)
     })
 };

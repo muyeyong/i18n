@@ -52,10 +52,11 @@ export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootP
                 getReplaceString(type, preferredI18n, flag, name) )
         }
     })
+
     const chineseJson: Record<string, string> = existChineseJson
     const otherLanguageJson: Record<string, string> = {}
     for (const [key, value] of chineseMap.entries()) {
-         const newKey = key.replace(/\s+/g, "")
+         const newKey = typeof key === 'string' ? key.replace(/\s+/g, "") : key
         chineseJson[value] = newKey
         otherLanguageJson[value] = ''
     }
