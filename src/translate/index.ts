@@ -31,6 +31,10 @@ const translate = async (params: any) => {
     const translateMap: Map<string, Array<string>> = new Map()
     if (config) {
         const { languages, translatedPath, languageMap, baiduAppid, baiduSecretKey } = config
+        if (baiduAppid === '' || baiduSecretKey === ''|| !baiduAppid || !baiduSecretKey) {
+            vscode.window.showWarningMessage('请先配置百度翻译的appid和secretKey')
+            return
+        }
         const chinese = languages.find(lan => lan.toLocaleLowerCase().includes('zh'))
         const chineseJsonPath = replaceFirstChart(join(rootPath, translatedPath, `${chinese}.json`), sep)
         if (operationPath !== chineseJsonPath) {
