@@ -11,6 +11,10 @@
   "categories": [
     "Other"
   ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/muyeyong/i18n"
+  },
   "activationEvents": [
     "onCommand:css-helper-plugin.codelensAction",
     "onLanguage:typescriptreact",
