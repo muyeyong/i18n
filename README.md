@@ -2,7 +2,8 @@
 
 ## 简介
 
-![i18n](./static/i18n.gif)
+## ![i18n](D:\dev\i18n\i18n\static\i18n.gif)
+
 
 1： 先生成配置文件
 
