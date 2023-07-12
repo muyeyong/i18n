@@ -4,7 +4,7 @@
   "description": "国际化插件",
   "version": "0.3.0",
   "engines": {
-    "vscode": "^1.79.0"
+    "vscode": "^1.37.0"
   },
   "publisher": "muyeyong",
   "categories": [
