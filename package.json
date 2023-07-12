@@ -76,18 +76,18 @@
       "lvI18n": [
         {
           "command": "lv-i18n.extractChinese",
-          "group": "2_workspace",
-          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
-        },
-        {
-          "command": "lv-i18n.createConfig",
-          "group": "2_workspace",
+          "group": "1_workspace",
           "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
         },
         {
           "command": "lv-i18n.translate",
-          "group": "2_workspace",
+          "group": "1_workspace",
           "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx|.json/"
+        },
+        {
+          "command": "lv-i18n.createConfig",
+          "group": "1_workspace",
+          "when": "resourceFilename =~ /.ts|.js|.html|.vue|.tsx|.jsx/"
         }
       ]
     },
