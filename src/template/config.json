@@ -1,17 +1,18 @@
 {
     "localeTranslatePath": "",
     "remoteTranslatePath": "",
-    "translatedPath": "src/local/config",
+    "translatedPath": "src/locale/config",
     "languages": [
-        "enUS",
-        "zhCN"],
+        "en",
+        "zh-cn"
+    ],
     "i18n": ["t", "$t"],
     "baiduAppid": "",
     "baiduSecretKey": "",
-    "preferredLanguage": "zhCN",
+    "preferredLanguage": "zh-cn",
     "preferredI18n": "$t",
     "languageMap": {
-        "enUS": "en",
-        "zhCN": "zh"
+        "en": "en",
+        "zh-cn": "zh"
     }
 }
