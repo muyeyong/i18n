@@ -5,7 +5,7 @@ import { nanoid } from "nanoid";
 import { readJSONSync, writeFileSync } from "fs-extra";
 import { join } from "path";
 import { NODE_TYPE } from "../constants/template";
-import { readChinese, reverseDependence } from '../utils/file';
+import { readChinese } from '../utils/file';
 
 // 根据type返回取代的字符串
 const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: string ) => {

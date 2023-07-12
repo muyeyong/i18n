@@ -6,14 +6,6 @@ import { NODE_TYPE } from '../constants/template';
 let edits: Array<EditInfo> = []
 let lineOffset = 0
 
-/* 
-    变量声明：
-        1:普通变量声明: const let var 
-        2:箭头函数
-        3: 组合式: 1+1 1+2?
- */
-
-
 // 解析字符串
 const parseStringLiteral = async (node: any) => {
     // 根据位置信息进行替换

@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { readConfig, findRootPath } from '../utils/file';
 import { ensureFileSync } from 'fs-extra';
 import { join } from 'path';
-import { parse } from '@vue/compiler-sfc';
 import { EditInfo } from '../type';
 import { writeExtractResult } from './writeLan';
 import { parseVue } from './parseVue';
@@ -26,7 +25,6 @@ const generateLanguageFiles = (languages: Array<string>, path: string) => {
 
 const extract = async (params: any) => {
     let text = vscode.window.activeTextEditor?.document.getText() || '';
-    const parsed = parse(text, { filename: 'example.vue' });
     try {
         const config = readConfig(params.fsPath);
         if (!config) {
@@ -49,7 +47,6 @@ const extract = async (params: any) => {
             const rootPath = findRootPath(params.fsPath);
             const { languages, translatedPath } = config;
             generateLanguageFiles(languages, join(rootPath, translatedPath))
-            // TODO 写入文件有问题
             writeExtractResult(result, config, rootPath, params.fsPath)
         }
 

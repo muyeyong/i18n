@@ -1,8 +1,7 @@
 import { SFCParseResult, compileTemplate } from "@vue/compiler-sfc";
-import { Config, EditInfo } from "../type";
+import { EditInfo } from "../type";
 import { includeChinese } from "../utils/lan";
 import { NODE_TYPE } from "../constants/template";
-import { NodeTypes } from '@vue/compiler-core'
 
 let edits: Array<EditInfo> = []
 let lineOffset = 0
