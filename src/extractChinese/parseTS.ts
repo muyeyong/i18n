@@ -4,7 +4,6 @@ import { EditInfo } from '../type';
 import { NODE_TYPE } from '../constants/template';
 import { includeChinese } from '../utils/lan';
 
-const zhRegexp = /[\u4e00-\u9fa5]/; 
 let edits: Array<EditInfo> = [];
 
 function traverseNode(node: any) {

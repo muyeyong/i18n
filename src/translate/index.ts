@@ -4,7 +4,6 @@ import { join, sep } from 'path';
 import { readJSONSync, writeJSONSync } from 'fs-extra';
 import CryptoJS from "crypto-js";
 import axios from "axios";
-import querystring from "querystring";
 import { sleep } from '../utils/common';
 
 const replaceFirstChart = (str: string, chart: string) => {
@@ -83,11 +82,10 @@ const translate = async (params: any) => {
 const baidu = (query: string, to: string, appid: string, key: string, translateDelay: number ): Promise<string> => {
     return new Promise(async (resolve) => {
         // TODO 配置文件获取
-        const salt = new Date().getTime();
+        const salt = new Date().getTime().toString();
         const str1 = appid + truncate(query) + salt + key;
-
         var sign = CryptoJS.SHA256(str1).toString(CryptoJS.enc.Hex);
-        const res = await axios.post('https://fanyi-api.baidu.com/api/trans/vip/translate', querystring.stringify({
+        const res = await axios.post('https://fanyi-api.baidu.com/api/trans/vip/translate', new URLSearchParams({
             q: query,
             appid,
             salt,
