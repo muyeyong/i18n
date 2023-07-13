@@ -16,7 +16,7 @@
 
 + 自动提取中文
 + 翻译提取结果
-+ 选中提取，以防自动提起遗漏
++ 选中提取，以防自动提取遗漏
 + 提取复用，存在相同的文案，会直接复用
 + 支持切换语言显示
 + 不同项目支持不同的配置，十分灵活
@@ -35,5 +35,5 @@
 | preferredLanguage   | zh-cn                          | string  | 首选语言                       |          |
 | preferredI18n       | $t                             | string  | 首选国际化包裹                 |          |
 | languageMap         | {'en'：'en', 'zh-cn': 'zh-cn'} | obbject | languages 跟百度翻译语言映射   |          |
-| translateDelay      | 1000                           | number  | 翻译延时，调用翻译接口过快设置 |          |
+| translateDelay      | 1000                           | number  | 翻译延时，调用翻译接口过快设置(氪金可以更快) |          |
 
