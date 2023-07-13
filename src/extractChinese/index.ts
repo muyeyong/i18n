@@ -28,11 +28,11 @@ const extract = async (params: any) => {
                 return
             }
             const rootPath = findRootPath(params.fsPath);
-            const { languages, translatedPath } = config;
             writeExtractResult(result, config, rootPath, params.fsPath)
         }
 
     } catch (error) {
+        vscode.window.showErrorMessage('出错了!!!');
     }
 
 };
