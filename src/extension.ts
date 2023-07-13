@@ -11,8 +11,8 @@ export function activate(context: vscode.ExtensionContext) {
 	createConfig(context)
 	translate(context)
 	replace(context)
-	vscode.languages.registerCodeLensProvider(['typescript', 'vue', 'javascript'], new I18nProvider())
-	vscode.languages.registerCodeActionsProvider(['typescript', 'vue', 'javascript'], new ReplaceProvide() )
+	vscode.languages.registerCodeLensProvider(['typescript', 'vue', 'javascript', 'typescriptreact', 'javascriptreact'], new I18nProvider())
+	vscode.languages.registerCodeActionsProvider(['typescript', 'vue', 'javascript', 'typescriptreact', 'javascriptreact'], new ReplaceProvide() )
 }
 
 export function deactivate() {}

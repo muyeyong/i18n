@@ -11,16 +11,17 @@ const replace = async (params: any) => {
     for(const key in existChineseJson) {
         chineseMap.set(existChineseJson[key], key)
     }
-    let flag = chineseMap.get(text)
+    const newText = text.replace(/^['"]|['"]$/g, '')
+    let flag = chineseMap.get(newText)
     if (!flag) {
         flag = nanoid(6)
-        chineseMap.set(text, flag)
+        chineseMap.set(newText, flag)
     }
     const activeTextEditor = vscode.window.activeTextEditor
     activeTextEditor?.edit(async (editBuilder) => {
         editBuilder.replace(
             range,
-            keyReplace(chineseMap.get(text))
+            keyReplace(chineseMap.get(newText))
         )
     })
     writeLan(chineseMap, config, rootPath, filepath)

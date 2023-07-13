@@ -58,7 +58,7 @@ export class ReplaceProvide implements vscode.CodeActionProvider {
             keyReplace: this.keyReplace(`{ ${params.config.preferredI18n}('{key}') }`)
           }
         ]
-      }
+      },
     ]
   }
 }
