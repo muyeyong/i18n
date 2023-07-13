@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import { readConfig, findRootPath } from '../utils/file';
-import { ensureFileSync } from 'fs-extra';
+import { readConfig } from '../utils/file';
 
 export class ReplaceProvide implements vscode.CodeActionProvider {
   provideCodeActions(): vscode.Command[] {

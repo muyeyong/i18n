@@ -1,27 +1,11 @@
 import * as vscode from 'vscode';
 import { readConfig, findRootPath } from '../utils/file';
-import { ensureFileSync } from 'fs-extra';
-import { join } from 'path';
 import { EditInfo } from '../type';
 import { writeExtractResult } from './replace';
 import { parseVue } from './parseVue';
 import { getFileExtension } from '../utils/common';
 import { parseTS } from './parseTS'
 import { parseTSX } from './parseTSX'
-
-
-/* 
-    变量声明：
-        1:普通变量声明: const let var 
-        2:箭头函数
-        3: 组合式: 1+1 1+2?
- */
-
-const generateLanguageFiles = (languages: Array<string>, path: string) => {
-    languages.forEach(lan => ensureFileSync(join(path, `${lan}.json`)));
-};
-
-
 
 const extract = async (params: any) => {
     try {

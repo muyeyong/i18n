@@ -2,8 +2,6 @@
 import { Config, EditInfo } from "../type";
 import * as vscode from 'vscode'
 import { nanoid } from "nanoid";
-import { readJSONSync, writeFileSync } from "fs-extra";
-import { join } from "path";
 import { NODE_TYPE } from "../constants/template";
 import { readChinese } from '../utils/file';
 import writeLan  from '../common/writeLan'
