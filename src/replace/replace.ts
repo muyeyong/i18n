@@ -23,7 +23,7 @@ const replace = async (params: any) => {
     activeTextEditor?.edit(async (editBuilder) => {
         editBuilder.replace(
             range,
-            keyReplace(chineseMap.get(newText))
+            keyReplace(flag)
         )
     })
     writeLan(chineseMap, config, rootPath, filepath)
