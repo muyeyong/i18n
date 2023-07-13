@@ -50,7 +50,7 @@ const parseNormalVariable = async (declarations: any) => {
     for (let i = 0; i < declarations.length; i += 1) {
         const { init } = declarations[i];
         if (!init) continue
-        if (init.type === 'StringLiteral') {
+        if (init?.type === 'StringLiteral') {
             await parseStringLiteral(init)
         } else {
             await parseAll(init)
@@ -63,15 +63,17 @@ const parseFunctionExpression = async (node: any) => {
     // CallExpression
     // BlockStatement
     const { body, params, } = node
-    if (body.type === 'CallExpression') { 
-        await parseCallExpression(node.body)
+    if (body?.type === 'CallExpression' && body) { 
+        await parseCallExpression(body)
+    } else if (body?.type === 'BlockStatement') {
+            for (let i = 0; i < body.body.length; i += 1) {
+                await parseAll(body.body[i])
+            }
+            for (let i = 0; i < params.length; i += 1) {
+                await parseAll(params[i])
+            }
     } else {
-        for (let i = 0; i < body.body.length; i += 1) {
-            await parseAll(body.body[i])
-        }
-        for (let i = 0; i < params.length; i += 1) {
-            await parseAll(params[i])
-        }
+        await parseAll(body)
     }
 }
 
@@ -83,7 +85,7 @@ const parseCallExpression = async (node: any) => {
 
 // 解析返回类型
 const parseOutInStatement = async (node: any) => {
-    if (node.type === 'StringLiteral') {
+    if (node?.type === 'StringLiteral') {
         await parseStringLiteral(node)
     } else {
         await parseAll(node)
@@ -136,7 +138,7 @@ const parseJSXOpeningElement = async (node: any) => {
 const parseJSXAttribute = async (node: any) => {
     return new Promise((resolve) => {
         const { name, value, loc } = node
-        if (value.type === 'StringLiteral' && includeChinese(value.value)) {
+        if (value?.type === 'StringLiteral' && includeChinese(value.value)) {
            edits.push({
             value: value.value,
             loc: {
@@ -208,55 +210,62 @@ const parseSwitchCase = async (node: any) => {
 
 // 解析AssignmentPattern
 
+// 解析MemberExpression
+const parseMemberExpression = async (node: any) => {
+    await parseAll(node.object)
+    await parseAll(node.property)
+}
 // 解析所有类型
 const parseAll = async (node: any) => {
     if (!node || !node.type) return
-    if (node.type === 'VariableDeclaration' && ['const', 'let', 'var'].includes(node.kind)) {
+    if (node?.type === 'VariableDeclaration' && ['const', 'let', 'var'].includes(node.kind)) {
         await parseNormalVariable(node.declarations)
-    } else if (node.type === 'ArrowFunctionExpression') {
+    } else if (node?.type === 'ArrowFunctionExpression') {
         await parseFunctionExpression(node)
-    } else if (node.type === 'ReturnStatement') {
+    } else if (node?.type === 'ReturnStatement') {
         await parseOutInStatement(node.argument)
-    } else if (node.type === 'FunctionDeclaration') {
+    } else if (node?.type === 'FunctionDeclaration') {
         await parseFunctionExpression(node)
-    } else if (node.type === 'AssignmentPattern') {
+    } else if (node?.type === 'AssignmentPattern') {
         await parseBinaryExpression(node.left)
         await parseBinaryExpression(node.right)
-    } else if (node.type === 'StringLiteral') {
+    } else if (node?.type === 'StringLiteral') {
         await parseStringLiteral(node)
-    } else if (node.type === 'ObjectProperty') {
+    } else if (node?.type === 'ObjectProperty') {
         await parseAll(node.value)
-    } else if (node.type === 'ObjectExpression') {
+    } else if (node?.type === 'ObjectExpression') {
         await parseObjectExpression(node)
-    } else if (node.type === 'ExpressionStatement') {
+    } else if (node?.type === 'ExpressionStatement') {
         await parseAll(node.expression)
-    } else if (node.type === 'CallExpression') {
+    } else if (node?.type === 'CallExpression') {
         await parseCallExpression(node)
-    } else if (node.type === 'BinaryExpression') {
+    } else if (node?.type === 'BinaryExpression') {
         await parseBinaryExpression(node.left)
         await parseBinaryExpression(node.right)
-    } else if(node.type === 'JSXElement') {
+    } else if(node?.type === 'JSXElement') {
         await parseJSXElement(node)
-    } else if (node.type === 'JSXText') {
+    } else if (node?.type === 'JSXText') {
         await parseJSXText(node)
-    } else if (node.type === 'JSXOpeningElement') {
+    } else if (node?.type === 'JSXOpeningElement') {
         await parseJSXOpeningElement(node)
-    } else if (node.type === 'JSXAttribute') {
+    } else if (node?.type === 'JSXAttribute') {
         await parseJSXAttribute(node)
-    } else if (node.type === 'JSXExpressionContainer') {
+    } else if (node?.type === 'JSXExpressionContainer') {
         await parseJSXExpressionContainer(node)
-    } else if (node.type === 'ArrayExpression') {
+    } else if (node?.type === 'ArrayExpression') {
         await parseArrayExpression(node)
-    } else if (node.type === 'IfStatement') {
+    } else if (node?.type === 'IfStatement') {
         await parseIfStatement(node)
-    } else if (node.type === 'NewExpression') {
+    } else if (node?.type === 'NewExpression') {
         await parseNewExpression(node)
-    } else if(node.type === 'BlockStatement') {
+    } else if(node?.type === 'BlockStatement') {
         parseBlockStatement(node)
-    } else if (node.type === 'SwitchStatement') {
+    } else if (node?.type === 'SwitchStatement') {
         parseSwitchStatement(node)
-    } else if (node.type === 'SwitchCase') {
+    } else if (node?.type === 'SwitchCase') {
         parseSwitchCase(node)
+    } else if(node?.type === 'MemberExpression') {
+        await parseMemberExpression(node)
     }
 }
 
