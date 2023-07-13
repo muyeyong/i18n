@@ -45,7 +45,7 @@ export class I18nProvider implements vscode.CodeLensProvider {
             matchedAlias = matchI18nVariable(i18nVariables, match[1]);
             if (matchedAlias) {
                 const line = document.lineAt(document.positionAt(match.index!).line);
-                const indexOf = line.text.indexOf(match[1]);
+                const indexOf = line.text.indexOf(match[0]);
                 const position = new vscode.Position(line.lineNumber, indexOf);
                 //TODO range位置调整
                 const range = document.getWordRangeAtPosition(position, regex);
