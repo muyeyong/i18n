@@ -29,18 +29,20 @@ const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: st
 export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootPath: string, currPath: string) => {
     const { preferredI18n } = config
     const chineseMap = new Map<string, string>()
+    const existChineseMap = new Map<string, string>()
     const existChineseJson = readChinese(currPath)
     for(const key in existChineseJson) {
-        chineseMap.set(existChineseJson[key], key)
+        existChineseMap.set(existChineseJson[key], key)
     }
     const activeTextEditor = vscode.window.activeTextEditor
     activeTextEditor?.edit(async (editBuilder) => {
         for (const { value, loc, type, name } of edits) {
             const newValue = value.replace(/\s+/g, "")
-            let flag = chineseMap.get(newValue)
+            let flag = existChineseMap.get(newValue)
             if (!flag) {
                 flag = nanoid(6)
                 chineseMap.set(newValue, flag)
+                existChineseMap.set(newValue, flag)
             }
             const { start, end } = loc
             editBuilder.replace(

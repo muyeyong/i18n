@@ -81,6 +81,7 @@ const parseCallExpression = async (node: any) => {
     for (let i = 0; i < node.arguments.length; i += 1) {
         await parseAll(node.arguments[i])
     }
+    node.callee && await parseAll(node.callee)
 }
 
 // 解析返回类型

@@ -7,15 +7,17 @@ const replace = async (params: any) => {
     const { config, range, text, filepath, keyReplace } = params
     const rootPath = findRootPath(params.filepath);
     const chineseMap = new Map<string, string>()
+    const existChineseMap = new Map<string, string>()
     const existChineseJson = readChinese(filepath)
     for(const key in existChineseJson) {
-        chineseMap.set(existChineseJson[key], key)
+        existChineseMap.set(existChineseJson[key], key)
     }
     const newText = text.replace(/^['"]|['"]$/g, '')
-    let flag = chineseMap.get(newText)
+    let flag = existChineseMap.get(newText)
     if (!flag) {
         flag = nanoid(6)
         chineseMap.set(newText, flag)
+        existChineseMap.set(newText, flag)
     }
     const activeTextEditor = vscode.window.activeTextEditor
     activeTextEditor?.edit(async (editBuilder) => {
