@@ -6,6 +6,9 @@ import CryptoJS from "crypto-js";
 import axios from "axios";
 import { sleep } from '../utils/common';
 
+
+let errorList: Array<string> = []
+
 const replaceFirstChart = (str: string, chart: string) => {
     if (str.startsWith(chart)) {
         return str.slice(1)
@@ -22,6 +25,7 @@ function truncate(q: string): string {
 }
 
 const translate = async (params: any) => {
+    errorList = []
     // 找到package.json的目录
     const operationPath = replaceFirstChart(params.fsPath, sep);
     const rootPath = findRootPath(operationPath);
@@ -70,6 +74,7 @@ const translate = async (params: any) => {
                 const dst = await baidu(texts[i], languageMap[lan], baiduAppid, baiduSecretKey, translateDelay || 1000)
                 otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = dst
             }
+            vscode.window.showInformationMessage (`翻译失败的文案：${errorList.join('\n')}`);
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 4 })
         }
         vscode.window.showInformationMessage('翻译完成')
@@ -101,7 +106,8 @@ const baidu = (query: string, to: string, appid: string, key: string, translateD
         if (res.data.trans_result?.length > 0) {
             resolve(res.data.trans_result[0].dst)
         } else {
-            vscode.window.showErrorMessage(query, '翻译失败')
+            errorList.push(query)
+            // vscode.window.showErrorMessage(query, '翻译失败')
             resolve('')
         }
     })

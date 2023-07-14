@@ -13,6 +13,8 @@ const extract = async (params: any) => {
         if (!config) {
             vscode.window.showErrorMessage('请先生成配置文件');
         } else {
+            // 检查json文件格式是否正确
+            
            let result: Array<EditInfo> = []
            // 文件后缀
            const fileExtension = getFileExtension(params.path).toLocaleLowerCase()
