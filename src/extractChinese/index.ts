@@ -6,6 +6,8 @@ import { parseVue } from './parseVue';
 import { getFileExtension } from '../utils/common';
 import { parseTS } from './parseTS'
 import { parseTSX } from './parseTSX'
+import { generateLanguageFiles } from '../common/checkLanJson'
+import { join } from 'path';
 
 const extract = async (params: any) => {
     try {
@@ -13,8 +15,12 @@ const extract = async (params: any) => {
         if (!config) {
             vscode.window.showErrorMessage('请先生成配置文件');
         } else {
+            const rootPath = findRootPath(params.fsPath);
             // 检查json文件格式是否正确
-            
+            if (!generateLanguageFiles(config.languages, join(rootPath, config.translatedPath))) {
+                return
+            }
+
            let result: Array<EditInfo> = []
            // 文件后缀
            const fileExtension = getFileExtension(params.path).toLocaleLowerCase()
@@ -29,7 +35,7 @@ const extract = async (params: any) => {
                 vscode.window.showErrorMessage('暂不支持该文件类型');
                 return
             }
-            const rootPath = findRootPath(params.fsPath);
+           
             writeExtractResult(result, config, rootPath, params.fsPath)
         }
 
