@@ -74,7 +74,9 @@ const translate = async (params: any) => {
                 const dst = await baidu(texts[i], languageMap[lan], baiduAppid, baiduSecretKey, translateDelay || 1000)
                 otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = dst
             }
-            vscode.window.showErrorMessage(`翻译失败的文案：${errorList.join('\n')}`);
+            if (errorList.length > 0) { 
+                vscode.window.showErrorMessage(`翻译失败的文案：${errorList.join(';')}`);
+            }
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 4 })
         }
         vscode.window.showInformationMessage('翻译完成')
