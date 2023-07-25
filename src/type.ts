@@ -9,6 +9,7 @@ export interface Config {
     baiduAppid: string,
     baiduSecretKey: string,
     preferredLanguage: string
+    chineseFileName: string
     preferredI18n: string,
     languageMap: Record<string, string>
     translateDelay?: number

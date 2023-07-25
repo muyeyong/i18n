@@ -1,4 +1,4 @@
-import { ensureFileSync, readFileSync, readJSONSync, writeFileSync, writeJSONSync } from "fs-extra";
+import { ensureFileSync, readFileSync, readJSONSync, writeFileSync } from "fs-extra";
 import { join } from "path";
 import * as vscode from 'vscode';
 

@@ -11,6 +11,7 @@
     "baiduSecretKey": "",
     "preferredLanguage": "zh-cn",
     "preferredI18n": "$t",
+    "chineseFileName": "zh-cn",
     "languageMap": {
         "en": "en",
         "zh-cn": "zh"

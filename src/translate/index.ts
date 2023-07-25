@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
 import { findRootPath, readConfig, reverseDependence } from '../utils/file';
 import { join, sep } from 'path';
-import { readJSONSync, writeJSONSync } from 'fs-extra';
+import { ensureFileSync, readFileSync, readJSONSync, writeFileSync, writeJSONSync } from 'fs-extra';
 import CryptoJS from "crypto-js";
 import axios from "axios";
 import { sleep } from '../utils/common';
+import { generateLanguageFiles } from '../common/checkLanJson';
 
 
 let errorList: Array<string> = []
@@ -25,6 +26,7 @@ function truncate(q: string): string {
 }
 
 const translate = async (params: any) => {
+   
     errorList = []
     // 找到package.json的目录
     const operationPath = replaceFirstChart(params.fsPath, sep);
@@ -33,19 +35,19 @@ const translate = async (params: any) => {
     // 待翻译列表
     const translateMap: Map<string, Array<string>> = new Map()
     if (config) {
-        const { languages, translatedPath, languageMap, baiduAppid, baiduSecretKey, translateDelay } = config
+        const { languages, translatedPath, languageMap, baiduAppid, baiduSecretKey, translateDelay, chineseFileName } = config
+       if (!generateLanguageFiles(languages, join(rootPath, translatedPath))) return
         if (baiduAppid === '' || baiduSecretKey === ''|| !baiduAppid || !baiduSecretKey) {
             vscode.window.showWarningMessage('请先配置百度翻译的appid和secretKey')
             return
         }
-        const chinese = languages.find(lan => lan.toLocaleLowerCase().includes('zh'))
-        const chineseJsonPath = replaceFirstChart(join(rootPath, translatedPath, `${chinese}.json`), sep)
+        const chineseJsonPath = replaceFirstChart(join(rootPath, translatedPath, `${chineseFileName}.json`), sep)
         if (operationPath !== chineseJsonPath) {
-            vscode.window.showWarningMessage(`请前往${join(translatedPath, `${chinese}.json`)}执行命令`)
+            vscode.window.showWarningMessage(`请前往${join(translatedPath, `${chineseFileName}.json`)}执行命令`)
             return
         }
         const chineseJson = readJSONSync(chineseJsonPath)
-        const otherLanguage = languages.filter(lan => !lan.toLocaleLowerCase().includes('zh'))
+        const otherLanguage = languages.filter(lan => lan !== chineseFileName)
         const otherLanguageJsonMap: Map<string, Record<string, string>> = new Map()
         for (let i = 0; i < otherLanguage.length; i++) {
             const lan = otherLanguage[i]

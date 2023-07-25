@@ -46,11 +46,10 @@ export const readConfig = (path: string): Config | null => {
 export const readChinese = (path: string): any => {
     const config = readConfig(path)
     if(config) {
-        const { languages, translatedPath } = config
-        const zhFileName = languages.find(item => item.toLocaleLowerCase().includes('zh'))
+        const { languages, translatedPath, chineseFileName } = config
         const rootPath = findRootPath(path)
-        if(rootPath !== '' && zhFileName) {
-            const chinesePath = join(rootPath, translatedPath, `${zhFileName}.json`)
+        if(rootPath !== '' && chineseFileName) {
+            const chinesePath = join(rootPath, translatedPath, `${chineseFileName}.json`)
             if(isFileExisted(chinesePath)) {
                 return readJSONSync(chinesePath, { throws: false }) ?? {}
             } else {
