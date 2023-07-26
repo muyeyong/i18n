@@ -7,7 +7,7 @@ import { readChinese } from "../utils/file";
 
 
  const writeLan = (chineseMap:Map<string, string>, config: Config, rootPath: string, currPath: string) => {
-    const { languages, translatedPath } = config
+    const { languages, translatedPath, chineseFileName } = config
     const existChineseJson = readChinese(currPath)
     const chineseJson: Record<string, string> = {}
     const otherLanguageJson: Record<string, string> = {}
@@ -17,7 +17,7 @@ import { readChinese } from "../utils/file";
         otherLanguageJson[value] = ''
     }
     languages.forEach((lan: string) => {
-        if (lan.toLocaleLowerCase().includes('zh')) {
+        if (lan === chineseFileName) {
             if (Object.keys(chineseJson).length > 0) {
                 writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), { ...existChineseJson, ...chineseJson}, { spaces: 2 })
             }

@@ -36,5 +36,5 @@
 | preferredI18n       | $t                             | string  | 首选国际化包裹                 |          |
 | languageMap         | {'en'：'en', 'zh-cn': 'zh-cn'} | obbject | languages 跟百度翻译语言映射   |          |
 | translateDelay      | 1000                           | number  | 翻译延时，调用翻译接口过快设置(氪金可以更快) |          |
-| chineseFileName | zh-cb | string | 中文文件名 | |
+| chineseFileName | zh-cn | string | 中文文件名 | |
 
