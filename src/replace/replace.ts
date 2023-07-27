@@ -4,9 +4,11 @@ import { nanoid } from 'nanoid';
 import writeLan from '../common/writeLan';
 import { generateLanguageFiles } from '../common/checkLanJson';
 import { join } from 'path';
+import { checkConfig } from '../utils/common';
 
 const replace = async (params: any) => {
     const { config, range, text, filepath, keyReplace } = params
+    if(!checkConfig(config)) return
     const rootPath = findRootPath(params.filepath);
     const chineseMap = new Map<string, string>()
     const existChineseMap = new Map<string, string>()

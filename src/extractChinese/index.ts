@@ -3,7 +3,7 @@ import { readConfig, findRootPath } from '../utils/file';
 import { EditInfo } from '../type';
 import { writeExtractResult } from './replace';
 import { parseVue } from './parseVue';
-import { getFileExtension } from '../utils/common';
+import { checkConfig, getFileExtension } from '../utils/common';
 import { parseTS } from './parseTS'
 import { parseTSX } from './parseTSX'
 import { generateLanguageFiles } from '../common/checkLanJson'
@@ -12,9 +12,11 @@ import { join } from 'path';
 const extract = async (params: any) => {
     try {
         const config = readConfig(params.fsPath);
+       
         if (!config) {
             vscode.window.showErrorMessage('请先生成配置文件');
         } else {
+            if (!checkConfig(config)) return
             const rootPath = findRootPath(params.fsPath);
             // 检查json文件格式是否正确
             if (!generateLanguageFiles(config.languages, join(rootPath, config.translatedPath))) {
