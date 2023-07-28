@@ -25,4 +25,5 @@ export const checkConfig = (config: Config) => {
             return false
         }
     }
+    return true
 }
