@@ -5,8 +5,10 @@ import createConfig from './createConfig';
 import translate from './translate'
 import { ReplaceProvide } from './replace/ReplaceProvider'
 import replace from './replace/replace'
+import { statsBar } from './statsBar'
 
 export function activate(context: vscode.ExtensionContext) {
+	statsBar.init(context)
 	extractChinese(context)
 	createConfig(context)
 	translate(context)

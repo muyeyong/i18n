@@ -4,11 +4,14 @@ import { join, sep } from 'path';
 import { ensureFileSync, readFileSync, readJSONSync, writeFileSync, writeJSONSync } from 'fs-extra';
 import CryptoJS from "crypto-js";
 import axios from "axios";
-import { sleep } from '../utils/common';
+import { sleep,checkConfig } from '../utils/common';
 import { generateLanguageFiles } from '../common/checkLanJson';
+import { extensionEmitter } from '../emitter'
 
 
-let errorList: Array<string> = []
+// 是否在翻译
+let translating = false
+let errorList: Array<{ query: string, failureReason: string}> = []
 
 const replaceFirstChart = (str: string, chart: string) => {
     if (str.startsWith(chart)) {
@@ -26,7 +29,10 @@ function truncate(q: string): string {
 }
 
 const translate = async (params: any) => {
-   
+    if (translating) {
+        vscode.window.showWarningMessage('正在翻译，请稍后再试')
+        return
+    }
     errorList = []
     // 找到package.json的目录
     const operationPath = replaceFirstChart(params.fsPath, sep);
@@ -35,6 +41,9 @@ const translate = async (params: any) => {
     // 待翻译列表
     const translateMap: Map<string, Array<string>> = new Map()
     if (config) {
+        if (!checkConfig(config)) {
+            return
+        }
         const { languages, translatedPath, languageMap, baiduAppid, baiduSecretKey, translateDelay, chineseFileName } = config
        if (!generateLanguageFiles(languages, join(rootPath, translatedPath))) return
         if (baiduAppid === '' || baiduSecretKey === ''|| !baiduAppid || !baiduSecretKey) {
@@ -46,6 +55,7 @@ const translate = async (params: any) => {
             vscode.window.showWarningMessage(`请前往${join(translatedPath, `${chineseFileName}.json`)}执行命令`)
             return
         }
+        translating = true
         const chineseJson = readJSONSync(chineseJsonPath)
         const otherLanguage = languages.filter(lan => lan !== chineseFileName)
         const otherLanguageJsonMap: Map<string, Record<string, string>> = new Map()
@@ -73,11 +83,14 @@ const translate = async (params: any) => {
             const otherLanguageJson = otherLanguageJsonMap.get(lan)
             if (!otherLanguageJson) continue
             for (let i = 0; i < texts.length; i++) {
-                const dst = await baidu(texts[i], languageMap[lan], baiduAppid, baiduSecretKey, translateDelay || 1000)
+                extensionEmitter.emit('translating',`$(sync~spin)正在翻译：${texts[i]}`)
+                const dst = await baidu(texts[i], languageMap[lan], baiduAppid, baiduSecretKey, translateDelay === undefined  ? 1000 : translateDelay)
                 otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = dst
             }
+            extensionEmitter.emit('translated', '✅翻译完成了，拜拜，请注意查看失败文案')
+            translating = false
             if (errorList.length > 0) { 
-                vscode.window.showErrorMessage(`翻译失败的文案：${errorList.join(';')}`);
+                vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join('/n')}`);
             }
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 4 })
         }
@@ -110,7 +123,7 @@ const baidu = (query: string, to: string, appid: string, key: string, translateD
         if (res.data.trans_result?.length > 0) {
             resolve(res.data.trans_result[0].dst)
         } else {
-            errorList.push(query)
+            errorList.push({query, failureReason: res.data.error_msg ?? '未知原因失败'})
             // vscode.window.showErrorMessage(query, '翻译失败')
             resolve('')
         }
