@@ -6,8 +6,10 @@ export interface Config {
     translatedPath: string,
     languages: Array<string>,
     i18n: Array<string>,
-    baiduAppid: string,
-    baiduSecretKey: string,
+    baiduAppid?: string,
+    baiduSecretKey?: string,
+    youdaoAppid?: string,
+    youdaoSecretKey: string,
     preferredLanguage: string
     chineseFileName: string
     preferredI18n: string,

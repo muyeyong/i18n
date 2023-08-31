@@ -9,6 +9,8 @@
     "i18n": ["t", "$t"],
     "baiduAppid": "",
     "baiduSecretKey": "",
+    "youdaoAppid": "",
+    "youdaoSecretKey": "",
     "preferredLanguage": "zh-cn",
     "preferredI18n": "$t",
     "chineseFileName": "zh-cn",
