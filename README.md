@@ -5,6 +5,7 @@
 
 ![i18n](https://user-images.githubusercontent.com/35398394/252871480-c3dd946c-7eb7-44da-83a9-92bb8833a6c3.gif)
 ![i18n-2](https://github.com/muyeyong/i18n/assets/35398394/f83be141-f9a7-4341-ab48-fee3e42a95cc)
+![国际化](https://github.com/muyeyong/i18n/assets/35398394/0dada87f-ae98-4258-aa96-30ee33a26fc5)
 
 1： 先生成配置文件
 
