@@ -15,11 +15,12 @@
 ## 功能
 
 + 自动提取中文
-+ 翻译提取结果
++ 翻译提取结果（支持百度和有道翻译）
 + 选中提取，以防自动提取遗漏
 + 提取复用，存在相同的文案，会直接复用
 + 支持切换语言显示
 + 不同项目支持不同的配置，十分灵活
++ 显示翻译进度
 
 ## 配置
 
@@ -34,7 +35,9 @@
 | baiduSecretKey      |                                | string  | 百度翻译密钥                   |          |
 | preferredLanguage   | zh-cn                          | string  | 首选语言                       |          |
 | preferredI18n       | $t                             | string  | 首选国际化包裹                 |          |
-| languageMap         | {'en'：'en', 'zh-cn': 'zh-cn'} | obbject | languages 跟百度翻译语言映射   |          |
+| languageMap         | {'en'：'en', 'zh-cn': 'zh-cn'} | object | languages 跟百度翻译语言映射   |          |
 | translateDelay      | 1000                           | number  | 翻译延时，调用翻译接口过快设置(氪金可以更快) |          |
 | chineseFileName | zh-cn | string | 中文文件名 | |
+| youdaoAppid |  |  | 有道翻译appid | |
+| youdaoSecretKey |  |  | 有道翻译密钥 | |
 

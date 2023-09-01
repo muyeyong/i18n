@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { findRootPath, readConfig, reverseDependence } from '../utils/file';
 import { join, sep } from 'path';
-import { ensureFileSync, readFileSync, readJSONSync, writeFileSync, writeJSONSync } from 'fs-extra';
+import {  readJSONSync, writeJSONSync } from 'fs-extra';
 import CryptoJS from "crypto-js";
 import axios from "axios";
 import { sleep,checkConfig } from '../utils/common';
@@ -90,17 +90,20 @@ const translate = async (params: any) => {
             if (!otherLanguageJson) continue
             for (let i = 0; i < texts.length; i++) {
                 extensionEmitter.emit('translating',`$(sync~spin)正在翻译：${texts[i]}`)
-                await translateApi(config, texts[i], languageMap[lan])
-                // const dst = await baidu(texts[i], languageMap[lan], baiduAppid, baiduSecretKey, translateDelay === undefined  ? 1000 : translateDelay)
-                // otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = dst
+                const result = await translateApi(config, texts[i], languageMap[lan])
+                if (!result.success) {
+                    errorList.push({query: texts[i], failureReason: result.errorMag! })
+                } else {
+                    otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = result.result!
+                }
             }
             translating = false
             if (errorList.length > 0) { 
-                vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join('/n')}`);
+                vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join(';')}`);
             }
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 2 })
         }
-        extensionEmitter.emit('translated', '✅翻译完成了，拜拜，请注意查看失败文案')
+        extensionEmitter.emit('translated', '✅翻译完成了，拜拜了您，请注意查看失败提示')
         vscode.window.showInformationMessage('翻译完成')
     } else {
         vscode.window.showWarningMessage('请先生成配置文件')
@@ -108,21 +111,35 @@ const translate = async (params: any) => {
 };
 
 
-const translateApi = async (config: Config, query: string, toLan: string) => {
+const translateApi = async (config: Config, query: string, toLan: string): Promise<{ errorMag?: string, success: boolean, result?: string}> => {
     const { baiduAppid, baiduSecretKey, youdaoAppid, youdaoSecretKey, translateDelay } = config
     const delay =  Number(translateDelay) ?? 1000
+    let transResult: string = ''
+    let errorMsg: string = ''
     if (baiduAppid && baiduSecretKey && baiduSecretKey.trim()!=="" && baiduAppid.trim() !=="") {
-       const res = await baidu(query, toLan, baiduAppid, baiduSecretKey, delay)
+       const res = await baidu(query, toLan, baiduAppid, baiduSecretKey)
        if (res.success) {
-        return res.result
+         transResult = res.result!
+       } else {
+         errorMsg = res.errorMsg!
        }
     }
-    if (youdaoAppid && youdaoSecretKey && youdaoAppid.trim() !== "" && youdaoSecretKey.trim() !=='') {
-        const res = await youdao(query, toLan, youdaoAppid, youdaoSecretKey, delay)
+    if (transResult === '' && youdaoAppid && youdaoSecretKey && youdaoAppid.trim() !== "" && youdaoSecretKey.trim() !=='') {
+        const res = await youdao(query, toLan, youdaoAppid, youdaoSecretKey)
+        if (res.success) {
+            return res
+        } else {
+            errorMsg = res.errorMsg!
+        }
     }
-    return ''
+    await sleep(delay)
+    return {
+        success: errorMsg === '',
+        errorMag: errorMsg,
+        result: transResult
+    }
 }
-const baidu = (query: string, to: string, appid: string, key: string, translateDelay: number ): Promise<{ success: boolean, result?: string, msg?: string}> => {
+const baidu = (query: string, to: string, appid: string, key: string): Promise<{ success: boolean, result?: string, errorMsg?: string}> => {
     return new Promise(async (resolve) => {
         const salt = new Date().getTime().toString();
         const str1 = appid + truncate(query) + salt + key;
@@ -139,7 +156,6 @@ const baidu = (query: string, to: string, appid: string, key: string, translateD
                 'Content-Type': 'application/x-www-form-urlencoded'
             },
         })
-        await sleep(translateDelay)
         if (res.data.trans_result?.length > 0) {
             resolve({
                 success: true,
@@ -149,33 +165,39 @@ const baidu = (query: string, to: string, appid: string, key: string, translateD
             // errorList.push({query, failureReason: res.data.error_msg ?? '未知原因失败'})
             resolve({
                 success: false,
-                msg: res.data.error_msg
+                errorMsg:'百度翻译错误码:' + res.data.error_code
             })
         }
     })
 }
 
-const youdao = (query: string, to: string, appid: string, key: string, translateDelay: number): Promise<string> => {
-    console.log('youdao start111')
+const youdao = (query: string, to: string, appKey: string, key: string): Promise<{ success: boolean, result?: string, errorMsg?: string}> => {
     return new Promise(async (resolve) => {
-        console.log('youdao start')
         const salt = generateUUID()
-        const curtime = new Date().getTime().toString();
-        const str1 = appid + truncate(query) + salt + curtime + key;
+        const curtime = Math.round(new Date().getTime()/1000).toString();
+        const str1 = appKey + truncate(query) + salt + curtime + key;
         var sign = CryptoJS.SHA256(str1).toString(CryptoJS.enc.Hex);
-        const res = await axios.post('https://openapi.youdao.com/api', {
+        const res = await axios.post('https://openapi.youdao.com/api',new URLSearchParams( {
             q: query,
-            appid,
+            appKey,
             salt,
             from: 'auto',
             to,
             sign,
             signType: 'v3',
             curtime
-        })
-        console.log('youdao', res)
-        resolve('')
-        // if (res)
+        }))
+        if (res.data.translation && res.data.translation.length > 0) {
+            resolve({
+                success: true,
+                result: res.data.translation[0]
+            })
+        } else {
+            resolve({
+                success: false,
+                errorMsg: '有道翻译错误码:' + res.data.errorCode
+            })
+        }
     })
 }
 export default function translateCommand(context: vscode.ExtensionContext) {

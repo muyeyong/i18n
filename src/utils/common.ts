@@ -17,10 +17,12 @@ export const getFileExtension = (filePath: string)  => {
     return lastIndex !== -1 ? filePath.slice(lastIndex + 1) : '';
   }
 
+// 非必要配置
+const noRequiredConfig = ['translateDelay', 'localeTranslatePath', 'remoteTranslatePath']
 // 检查配置文件是否正确
 export const checkConfig = (config: Config) => {
     for(const key in defaultConfig) {
-        if (!(key in config)) {
+        if (!(key in config) && !noRequiredConfig.includes(key)) {
             vscode.window.showWarningMessage(`配置文件中缺少${key}, 请参照说明补充`)
             return false
         }
