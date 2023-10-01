@@ -4,7 +4,7 @@ import { join, sep } from 'path';
 import {  readJSONSync, writeJSONSync } from 'fs-extra';
 import CryptoJS from "crypto-js";
 import axios from "axios";
-import { sleep,checkConfig } from '../utils/common';
+import { sleep,checkConfig, parseObject } from '../utils/common';
 import { generateLanguageFiles } from '../common/checkLanJson';
 import { extensionEmitter } from '../emitter'
 import { Config } from '../type';
@@ -64,7 +64,7 @@ const translate = async (params: any) => {
         translating = true
         const chineseJson = readJSONSync(chineseJsonPath)
         const otherLanguage = languages.filter(lan => lan !== chineseFileName)
-        const otherLanguageJsonMap: Map<string, Record<string, string>> = new Map()
+        const otherLanguageJsonMap: Map<string, Record<string, any>> = new Map()
         for (let i = 0; i < otherLanguage.length; i++) {
             const lan = otherLanguage[i]
             const otherLanguageJson = readJSONSync(join(rootPath, translatedPath, `${lan}.json`))
@@ -89,20 +89,44 @@ const translate = async (params: any) => {
             const otherLanguageJson = otherLanguageJsonMap.get(lan)
             if (!otherLanguageJson) continue
             for (let i = 0; i < texts.length; i++) {
-                extensionEmitter.emit('translating',`$(sync~spin)正在翻译：${texts[i]}`)
-                const result = await translateApi(config, texts[i], languageMap[lan])
-                if (!result.success) {
-                    errorList.push({query: texts[i], failureReason: result.errorMag! })
+                if (typeof texts[i] === 'object') {
+                  const parseResult = parseObject(texts[i])
+                  const translateResult: Record<string, any>  = {}
+                  for(const key in parseResult) {
+                    extensionEmitter.emit('translating',`$(sync~spin)正在翻译(to ${lan})：${parseResult[key]}`)
+                    const res  = await translateApi(config, parseResult[key], languageMap[lan])
+                    if (res.success) {
+                        const keys = key.split('.')
+                        let point: any = translateResult
+                        for (let j = 0; j < keys.length; j++) {
+                           if (!(keys[j] in point)) {
+                            j === keys.length-1 ? point[keys[j]] = res.result! : point[keys[j]] = {}
+                           } 
+                           point = point[keys[j]]
+                        }
+                    }
+                    else {
+                        errorList.push({query: parseResult[key], failureReason: res.errorMag! })
+                    }
+                  }
+                  otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = translateResult
                 } else {
-                    otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = result.result!
+                    extensionEmitter.emit('translating',`$(sync~spin)正在翻译：${texts[i]}`)
+                    const res = await translateApi(config, texts[i], languageMap[lan])
+                    if (!res.success) {
+                        errorList.push({query: texts[i], failureReason: res.errorMag! })
+                    } else {
+                        otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = res.result!
+                    }
                 }
             }
-            translating = false
+           
             if (errorList.length > 0) { 
                 vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join(';')}`);
             }
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 2 })
         }
+        translating = false
         extensionEmitter.emit('translated', '✅翻译完成了，拜拜了您，请注意查看失败提示')
         vscode.window.showInformationMessage('翻译完成')
     } else {
@@ -112,31 +136,39 @@ const translate = async (params: any) => {
 
 
 const translateApi = async (config: Config, query: string, toLan: string): Promise<{ errorMag?: string, success: boolean, result?: string}> => {
-    const { baiduAppid, baiduSecretKey, youdaoAppid, youdaoSecretKey, translateDelay } = config
-    const delay =  Number(translateDelay) ?? 1000
-    let transResult: string = ''
-    let errorMsg: string = ''
-    if (baiduAppid && baiduSecretKey && baiduSecretKey.trim()!=="" && baiduAppid.trim() !=="") {
-       const res = await baidu(query, toLan, baiduAppid, baiduSecretKey)
-       if (res.success) {
-         transResult = res.result!
-       } else {
-         errorMsg = res.errorMsg!
-       }
-    }
-    if (transResult === '' && youdaoAppid && youdaoSecretKey && youdaoAppid.trim() !== "" && youdaoSecretKey.trim() !=='') {
-        const res = await youdao(query, toLan, youdaoAppid, youdaoSecretKey)
-        if (res.success) {
-            return res
-        } else {
-            errorMsg = res.errorMsg!
+    try {
+        const { baiduAppid, baiduSecretKey, youdaoAppid, youdaoSecretKey, translateDelay } = config
+        const delay = Number.isInteger(translateDelay) ? translateDelay : 1000
+        let transResult: string = ''
+        let errorMsg: string = ''
+        if (baiduAppid && baiduSecretKey && baiduSecretKey.trim()!=="" && baiduAppid.trim() !=="") {
+            const res = await baidu(query, toLan, baiduAppid, baiduSecretKey)
+            if (res.success) {
+              transResult = res.result!
+            } else {
+              errorMsg = res.errorMsg!
+            }
+         }
+        if (transResult === '' && youdaoAppid && youdaoSecretKey && youdaoAppid.trim() !== "" && youdaoSecretKey.trim() !=='') {
+            const res = await youdao(query, toLan, youdaoAppid, youdaoSecretKey)
+            if (res.success) {
+                return res
+            } else {
+                errorMsg = res.errorMsg!
+            }
         }
-    }
-    await sleep(delay)
-    return {
-        success: errorMsg === '',
-        errorMag: errorMsg,
-        result: transResult
+        await sleep(delay!)
+        return {
+            success: errorMsg === '',
+            errorMag: errorMsg,
+            result: transResult
+        }
+    } catch (error) {
+        return {
+            errorMag: error as string,
+            success: false,
+            result: ''
+        }
     }
 }
 const baidu = (query: string, to: string, appid: string, key: string): Promise<{ success: boolean, result?: string, errorMsg?: string}> => {
@@ -162,7 +194,6 @@ const baidu = (query: string, to: string, appid: string, key: string): Promise<{
                 result: res.data.trans_result[0].dst
             })
         } else {
-            // errorList.push({query, failureReason: res.data.error_msg ?? '未知原因失败'})
             resolve({
                 success: false,
                 errorMsg:'百度翻译错误码:' + res.data.error_code

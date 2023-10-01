@@ -6,6 +6,8 @@
 ![i18n](https://user-images.githubusercontent.com/35398394/252871480-c3dd946c-7eb7-44da-83a9-92bb8833a6c3.gif)
 ![i18n-2](https://github.com/muyeyong/i18n/assets/35398394/f83be141-f9a7-4341-ab48-fee3e42a95cc)
 ![国际化](https://github.com/muyeyong/i18n/assets/35398394/0dada87f-ae98-4258-aa96-30ee33a26fc5)
+![嵌套对象中文](https://github.com/muyeyong/i18n/assets/35398394/91935724-57e8-4585-9919-edb8e08f7e44)
+![嵌套对象英文](https://github.com/muyeyong/i18n/assets/35398394/2d7f6a91-3c15-49b5-96d1-fbbb0eba7550)
 
 1： 先生成配置文件
 
@@ -22,6 +24,7 @@
 + 支持切换语言显示
 + 不同项目支持不同的配置，十分灵活
 + 显示翻译进度
++ 支持嵌套对象结构翻译
 
 ## 配置
 

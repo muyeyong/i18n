@@ -29,3 +29,19 @@ export const checkConfig = (config: Config) => {
     }
     return true
 }
+
+/** 分析Object, 返回路径和值 */
+export const parseObject = (obj: any, prePath?: string) => {
+    if (typeof obj !== 'object') return
+    const result: { [key: string]: string } = {}
+    prePath = prePath ?? ''
+    for(const key in obj) {
+        if (typeof obj[key] === 'object') {
+           const cResult = parseObject(obj[key], prePath + (prePath === '' ? '' : '.') + key)
+           Object.assign(result, cResult)
+        } else {
+            result[prePath + (prePath === '' ? '' : '.') + key] = obj[key]
+        }
+    }
+    return result
+}

@@ -2,11 +2,6 @@ import { readConfig, findRootPath } from './file'
 import { readJSONSync } from 'fs-extra'
 import { join } from 'path'
 
-const LESS_VARIABLES_REG =  /(\@[^:\s]+):[\s]*([^;]+);/g;
-
-interface IVariables {
-  [key:string]:string;
-}
 
 // 根据需要展示的语言和路径获取
 export default function findI18nVariables(path: string){
