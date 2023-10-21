@@ -7,6 +7,7 @@ import { ReplaceProvide } from './replace/ReplaceProvider'
 import replace from './replace/replace'
 import { statsBar } from './statsBar'
 
+// TODO 如果没有配置文件，就不要操作
 export function activate(context: vscode.ExtensionContext) {
 	statsBar.init(context)
 	extractChinese(context)

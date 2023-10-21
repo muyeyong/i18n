@@ -4,6 +4,9 @@ import { PACKAGE_JSON, LV18N_CONFIG } from '../constants/file'
 import { Config } from '../type'
 
 
+/** 读取文件 */
+
+/** 写入文件 */
 export const isFileExisted = (filaName: string) => {
     try {
         accessSync(filaName)
