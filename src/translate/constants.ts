@@ -9,7 +9,7 @@ export const baiduLanguagesMap: Record<string, string> = {
 /** 有道翻译语种映射： https://ai.youdao.com/DOCSIRMA/html/trans/api/wbfy/index.html */
 export const youdaoLanguagesMap: Record<string, string> = {
     'yue': 'yue',
-    'cht': 'zh-CHS',
+    'cht': 'zh-CHT',
     'en': 'en',
     'jp': 'ja'
 }
