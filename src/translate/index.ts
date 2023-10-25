@@ -8,6 +8,7 @@ import { sleep,checkConfig, parseObject } from '../utils/common';
 import { generateLanguageFiles } from '../common/checkLanJson';
 import { extensionEmitter } from '../emitter'
 import { Config } from '../type';
+import { baiduLanguagesMap, youdaoLanguagesMap } from './constants'
 
 // TODO 读取ts文件，需要把读取文件和写入文件抽取出来，适应不同类型文件的读写
 // 通过文件名去获取是什么类型的文件 json ts js
@@ -173,6 +174,7 @@ const translateApi = async (config: Config, query: string, toLan: string): Promi
     }
 }
 const baidu = (query: string, to: string, appid: string, key: string): Promise<{ success: boolean, result?: string, errorMsg?: string}> => {
+    to = baiduLanguagesMap[to] ?? to
     return new Promise(async (resolve) => {
         const salt = new Date().getTime().toString();
         const str1 = appid + truncate(query) + salt + key;
@@ -204,6 +206,7 @@ const baidu = (query: string, to: string, appid: string, key: string): Promise<{
 }
 
 const youdao = (query: string, to: string, appKey: string, key: string): Promise<{ success: boolean, result?: string, errorMsg?: string}> => {
+    to = youdaoLanguagesMap[to] ?? to
     return new Promise(async (resolve) => {
         const salt = generateUUID()
         const curtime = Math.round(new Date().getTime()/1000).toString();

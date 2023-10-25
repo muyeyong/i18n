@@ -33,15 +33,15 @@
 | localeTranslatePath |                                | string  | 本地翻译文件路径               | 否       |
 | remoteTranslatePath |                                | string  | 远程翻译文件url                | 否       |
 | translatedPath      | src/local/config               | string  | 存储提取中文结果文件地址       |          |
-| languages           | ['en', 'zh-cn']                | Array   | 语言集合                       |          |
+| languages           | ['en', 'zh-cn']                | Array   | 语言集合，会根据这个集合创建国际化文件   |          |
 | i18n                | ['t', '$t']                    | Array   | 国际化包裹                     |          |
 | baiduAppid          |                                | string  | 百度翻译appid                  |          |
 | baiduSecretKey      |                                | string  | 百度翻译密钥                   |          |
 | preferredLanguage   | zh-cn                          | string  | 首选语言                       |          |
 | preferredI18n       | $t                             | string  | 首选国际化包裹                 |          |
-| languageMap         | {'en'：'en', 'zh-cn': 'zh-cn'} | object | languages 跟百度翻译语言映射   |          |
+| languageMap         | {'en'：'en', 'zh-cn': 'zh-cn'} | object | languages 跟翻译目标语言的映射，目前支持中文繁体(cht)、粤语(yue)、英语(en)和日语(jp) |          |
 | translateDelay      | 1000                           | number  | 翻译延时，调用翻译接口过快设置(氪金可以更快) |          |
 | chineseFileName | zh-cn | string | 中文文件名 | |
-| youdaoAppid |  |  | 有道翻译appid | |
-| youdaoSecretKey |  |  | 有道翻译密钥 | |
+| youdaoAppid |  | string | 有道翻译appid | |
+| youdaoSecretKey |  | string | 有道翻译密钥 | |
 
