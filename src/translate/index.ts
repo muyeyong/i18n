@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { findRootPath, readConfig, reverseDependence } from '../utils/file';
+import { findRootPath, readConfig } from '../utils/file';
 import { join, sep } from 'path';
 import {  readJSONSync, writeJSONSync } from 'fs-extra';
 import CryptoJS from "crypto-js";
@@ -51,7 +51,7 @@ const translate = async (params: any) => {
     const rootPath = findRootPath(operationPath);
     const config = readConfig(operationPath)
     // 待翻译列表
-    const translateMap: Map<string, Array<string>> = new Map()
+    const translateMap: Map<string, Array<{key: string, value: any }>> = new Map()
     if (config) {
         if (!checkConfig(config)) {
             return
@@ -80,9 +80,9 @@ const translate = async (params: any) => {
                 if (!otherLanguageJson[key] || otherLanguageJson[key] === '') {
                     let target = translateMap.get(lan)
                     if (target) {
-                        target.push(chineseJson[key])
+                        target.push({key, value: chineseJson[key]})
                     } else {
-                        translateMap.set(lan, [chineseJson[key]])
+                        translateMap.set(lan, [{ key, value: chineseJson[key]}])
                     }
                 }
             }
@@ -91,8 +91,9 @@ const translate = async (params: any) => {
             const otherLanguageJson = otherLanguageJsonMap.get(lan)
             if (!otherLanguageJson) continue
             for (let i = 0; i < texts.length; i++) {
-                if (typeof texts[i] === 'object') {
-                  const parseResult = parseObject(texts[i])
+                const { key, value } = texts[i]
+                if (typeof value === 'object') {
+                  const parseResult = parseObject(value)
                   const translateResult: Record<string, any>  = {}
                   for(const key in parseResult) {
                     extensionEmitter.emit('translating',`$(sync~spin)正在翻译(to ${lan})：${parseResult[key]}`)
@@ -111,14 +112,14 @@ const translate = async (params: any) => {
                         errorList.push({query: parseResult[key], failureReason: res.errorMag! })
                     }
                   }
-                  otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = translateResult
+                  otherLanguageJson[key] = translateResult
                 } else {
-                    extensionEmitter.emit('translating',`$(sync~spin)正在翻译：${texts[i]}`)
-                    const res = await translateApi(config, texts[i], languageMap[lan])
+                    extensionEmitter.emit('translating',`$(sync~spin)正在翻译：${value}`)
+                    const res = await translateApi(config, value, languageMap[lan])
                     if (!res.success) {
-                        errorList.push({query: texts[i], failureReason: res.errorMag! })
+                        errorList.push({query: value, failureReason: res.errorMag! })
                     } else {
-                        otherLanguageJson[reverseDependence(chineseJson)[texts[i]]] = res.result!
+                        otherLanguageJson[key] = res.result!
                     }
                 }
             }

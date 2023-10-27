@@ -61,12 +61,3 @@ export const readChinese = (path: string): any => {
         }
     }
 }
-
-// 依赖反转
-export const reverseDependence = (dependence: Record<string, string>) => {
-    const reverseDependence: Record<string, string> = {}
-    for(const [key, value] of Object.entries(dependence)) {
-        reverseDependence[value] = key  
-    }
-    return reverseDependence
-}
