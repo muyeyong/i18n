@@ -15,6 +15,7 @@ import { baiduLanguagesMap, youdaoLanguagesMap } from './constants'
 // 是否在翻译
 // TODO 翻译失败应该自己进行重试
 // 不通的应用可以单独翻译，不是同一个接口控制
+// TODO 翻译超时处理
 let translating = false
 let errorList: Array<{ query: string, failureReason: string}> = []
 
