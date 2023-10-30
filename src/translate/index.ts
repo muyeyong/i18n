@@ -13,6 +13,8 @@ import { baiduLanguagesMap, youdaoLanguagesMap } from './constants'
 // TODO 读取ts文件，需要把读取文件和写入文件抽取出来，适应不同类型文件的读写
 // 通过文件名去获取是什么类型的文件 json ts js
 // 是否在翻译
+// TODO 翻译失败应该自己进行重试
+// 不通的应用可以单独翻译，不是同一个接口控制
 let translating = false
 let errorList: Array<{ query: string, failureReason: string}> = []
 
