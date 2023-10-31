@@ -16,6 +16,7 @@ import { baiduLanguagesMap, youdaoLanguagesMap } from './constants'
 // TODO 翻译失败应该自己进行重试
 // 不通的应用可以单独翻译，不是同一个接口控制
 // TODO 翻译超时处理
+// 手动提取的时候也要进行重复文案检查
 let translating = false
 let errorList: Array<{ query: string, failureReason: string}> = []
 
@@ -130,6 +131,8 @@ const translate = async (params: any) => {
             if (errorList.length > 0) { 
                 vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join(';')}`);
             }
+            // TODO 不一定要全部翻译完才写入，达到某个级别就写入，避免翻译太多
+            // TODO 需要替换写入文件的方法
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 2 })
         }
         translating = false

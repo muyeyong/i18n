@@ -23,3 +23,11 @@ export interface EditInfo {
     type: NODE_TYPE,
     name?: string
 }
+
+/** 国际化文件信息 */
+export interface I18nFile {
+    /** 国际化文件名称 */
+    name: string,
+    /** 国际化文件文件后缀: ts|js|json */
+    suffix: string
+}

@@ -1,12 +1,51 @@
-import { lstatSync, accessSync, readJSONSync } from 'fs-extra'
-import { sep, join } from 'path'
-import { PACKAGE_JSON, LV18N_CONFIG } from '../constants/file'
+import { lstatSync, accessSync, readJSONSync, readdirSync, ensureFileSync } from 'fs-extra'
+import { sep, join, extname } from 'path'
+import { PACKAGE_JSON, LV18N_CONFIG, FILE_TYPE } from '../constants/file'
 import { Config } from '../type'
+import { i18nFileInfos } from '../i18nFileInfos'
 
+
+/** 通过文件名获取文件类型，支持js、ts和json */
+function getFileType(filePath: string) {
+    const extension = extname(filePath).toLowerCase();
+    if (extension === '.js') {
+      return FILE_TYPE.JS;
+    } else if (extension === '.ts') {
+      return FILE_TYPE.TS;
+    } else if (extension === '.json') {
+      return FILE_TYPE.JSON;
+    } else {
+      return FILE_TYPE.UNKNOWN;
+    }
+  }
+
+/** 确保文件存在 */
+export const ensureFile = (parentPath: string, fileNames: string[]) => {
+    const files = readdirSync(parentPath)
+    for (const fileName of fileNames) {
+        const exist = files.find(item => item.includes(fileName))
+        const fileInfo = i18nFileInfos.find(item => item.name === fileName)
+        let suffix = 'json'
+        if (!exist) {
+            ensureFileSync(join(parentPath, `${fileName}.json`))
+        } else {
+            // 获取文件的后缀名
+            suffix = getFileType(join(parentPath, exist))
+        }
+        if (!fileInfo) {
+            i18nFileInfos.push({
+                name: fileName,
+                suffix
+            })
+        } else {
+            fileInfo.suffix = suffix
+        }
+    }
+}
 
 /** 读取文件 */
 
-/** 写入文件 */
+/** 判断文件是否存在 */
 export const isFileExisted = (filaName: string) => {
     try {
         accessSync(filaName)
@@ -16,6 +55,7 @@ export const isFileExisted = (filaName: string) => {
     }
 }
 
+/** 查找根路径 */
 export const findRootPath = (path: string): string => {
     if (path === '') {
         return ''
