@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { findRootPath, readChinese } from '../utils/file';
 import { nanoid } from 'nanoid';
 import writeLan from '../common/writeLan';
-import { generateLanguageFiles } from '../common/checkLanJson';
+import { preCheckLan } from '../common/checkLanJson';
 import { join } from 'path';
 import { checkConfig } from '../utils/common';
 
@@ -12,7 +12,7 @@ const replace = async (params: any) => {
     const rootPath = findRootPath(params.filepath);
     const chineseMap = new Map<string, string>()
     const existChineseMap = new Map<string, string>()
-    if (!generateLanguageFiles(config.languages, join(rootPath, config.translatedPath))) {
+    if (!preCheckLan(join(rootPath, config.translatedPath), config.languages)) {
         return
     }
     const existChineseJson = readChinese(filepath)

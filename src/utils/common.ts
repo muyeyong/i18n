@@ -23,6 +23,7 @@ const noRequiredConfig = ['translateDelay', 'localeTranslatePath', 'remoteTransl
 export const checkConfig = (config: Config) => {
     for(const key in defaultConfig) {
         if (!(key in config) && !noRequiredConfig.includes(key)) {
+            // TODO 更新配置文件
             vscode.window.showWarningMessage(`配置文件中缺少${key}, 请参照说明补充`)
             return false
         }

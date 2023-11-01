@@ -5,7 +5,7 @@ import {  readJSONSync, writeJSONSync } from 'fs-extra';
 import CryptoJS from "crypto-js";
 import axios from "axios";
 import { sleep,checkConfig, parseObject } from '../utils/common';
-import { generateLanguageFiles } from '../common/checkLanJson';
+import {  preCheckLan } from '../common/checkLanJson';
 import { extensionEmitter } from '../emitter'
 import { Config } from '../type';
 import { baiduLanguagesMap, youdaoLanguagesMap } from './constants'
@@ -61,7 +61,7 @@ const translate = async (params: any) => {
             return
         }
         const { languages, translatedPath, languageMap, chineseFileName } = config
-       if (!generateLanguageFiles(languages, join(rootPath, translatedPath))) return
+       if (!preCheckLan(join(rootPath, translatedPath), languages)) return
         const chineseJsonPath = replaceFirstChart(join(rootPath, translatedPath, `${chineseFileName}.json`), sep)
         if (operationPath !== chineseJsonPath) {
             vscode.window.showWarningMessage(`请前往${join(translatedPath, `${chineseFileName}.json`)}执行命令`)

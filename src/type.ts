@@ -28,6 +28,16 @@ export interface EditInfo {
 export interface I18nFile {
     /** 国际化文件名称 */
     name: string,
+    /** 文件路径 */
+    path: string,
     /** 国际化文件文件后缀: ts|js|json */
     suffix: string
+}
+
+/** 文件内容检查结果 */
+export interface CheckResult {
+    /** 结果 */
+    result: boolean,
+    /** 错误信息 */
+    errorMsg?: string[]
 }
