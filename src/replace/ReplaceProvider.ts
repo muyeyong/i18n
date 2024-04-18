@@ -58,6 +58,16 @@ export class ReplaceProvide implements vscode.CodeActionProvider {
           }
         ]
       },
+      {
+        command: 'lv-i18n.replace',
+        title:  `提取为this.${params.config.preferredI18n}('key')`,
+        arguments: [
+          {
+            ...params,
+            keyReplace: this.keyReplace(`this.${params.config.preferredI18n}('{key}')`)
+          }
+        ]
+      }
     ]
   }
 }
