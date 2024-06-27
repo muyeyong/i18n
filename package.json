@@ -2,7 +2,7 @@
   "name": "lv-i18n",
   "displayName": "LV i18n",
   "description": "国际化插件",
-  "version": "0.50.0",
+  "version": "0.51.0",
   "engines": {
     "vscode": "^1.37.0"
   },
