@@ -1,3 +1,8 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-13 08:30:25
+ * @LastEditors: xuyong
+ */
 // 生成多语言配置文件(json)
 import { Config, EditInfo } from "../type";
 import * as vscode from 'vscode'
@@ -12,6 +17,7 @@ const getReplaceString = (type: NODE_TYPE, i18n: string, flag: string, name?: st
         case NODE_TYPE.TSX_VARIABLE:
         case NODE_TYPE.TS_VARIABLE:
         case NODE_TYPE.VARIABLE:
+        case NODE_TYPE.INTERPOLATION:
             return `${i18n}('${flag}')`
         case NODE_TYPE.TEXT:
             return `{{ ${i18n}('${flag}') }}`

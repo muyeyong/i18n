@@ -66,6 +66,17 @@ const translate = async (params: any) => {
             vscode.window.showWarningMessage(`请前往${join(translatedPath, `${chineseFileName}.json`)}执行命令`)
             return
         }
+        if(!(config.baiduAppid && config.baiduSecretKey)) {
+            if(!(config.youdaoAppid && config.youdaoSecretKey)) {
+                vscode.window.showWarningMessage(`请在配置文件中配置翻译服务所需信息，否则翻译功能将不可用`);
+                return
+            }
+        }else if(!(config.youdaoAppid && config.youdaoSecretKey)) {
+            if(!(config.baiduAppid && config.baiduSecretKey)) {
+                vscode.window.showWarningMessage(`请在配置文件中配置翻译服务所需信息，否则翻译功能将不可用`);
+                return
+            }
+        }
         translating = true
         const chineseJson = readJSONSync(chineseJsonPath)
         const otherLanguage = languages.filter(lan => lan !== chineseFileName)

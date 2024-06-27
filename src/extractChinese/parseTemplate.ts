@@ -1,6 +1,6 @@
 import { SFCParseResult, compileTemplate } from "@vue/compiler-sfc";
 import { EditInfo } from "../type";
-import { includeChinese } from "../utils/lan";
+import { includeChinese, findChineseCharacters } from "../utils/lan";
 import { NODE_TYPE } from "../constants/template";
 
 let edits: Array<EditInfo> = []
@@ -29,7 +29,7 @@ function traverse(node: any) {
                 })
             }
         });
-    } else if (node.type === 12) {
+    } else if (node.type === 12) { // 插值
         const content = node.content
         try {
             if (content && includeChinese(content.content)) {
@@ -49,10 +49,28 @@ function traverse(node: any) {
         } catch (error) {
             console.log(error)
         }
-      
+    } else if(node.type === 5) {
+        traverse(node.content)
+    } else if (node.type === 8) {
+        const target = findChineseCharacters(node.loc.source)
+        target.forEach((item) => {
+            edits.push({
+                value: item.text, 
+                loc: {
+                    ...node.loc,
+                    start: { ...node.loc.start, line: node.loc.start.line + lineOffset, column: node.loc.start.column + item.start - 1 },
+                    end: { ...node.loc.end, line: node.loc.end.line + lineOffset, column: node.loc.start.column + item.start + item.text.length - 1 }
+                }, 
+                type: NODE_TYPE.INTERPOLATION
+            })
+        })
     }
-    if (node.children) {
-        node.children.forEach(traverse);
+    if (node.children || node.branches) {
+        if (node.children) {
+            node.children.forEach(traverse);
+        } else if (node.branches) {
+            node.branches.forEach(traverse);
+        }
     }
 }
 

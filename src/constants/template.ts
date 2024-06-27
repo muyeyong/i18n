@@ -12,5 +12,7 @@ export enum NODE_TYPE {
     /** tsx 变量 */
     TSX_VARIABLE = 'TSX_VARIABLE',
     /** ts变量 */
-    TS_VARIABLE = 'TS_VARIABLE'
+    TS_VARIABLE = 'TS_VARIABLE',
+    /** vue 插值 例如：{xxx} */
+    INTERPOLATION = 'INTERPOLATION'
 }

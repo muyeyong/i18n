@@ -1,3 +1,8 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-03 08:41:54
+ * @LastEditors: xuyong
+ */
 import * as vscode from 'vscode';
 import TipCodeLens from './tipCodeLens'
 import findI18nVariables from '../utils/findI18nVariables';
