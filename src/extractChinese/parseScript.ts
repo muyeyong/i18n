@@ -209,7 +209,11 @@ const parseSwitchCase = async (node: any) => {
     }
 }
 
-// 解析AssignmentPattern
+// 解析AssignmentExpression
+const parseAssignmentExpression = async (node: any) => {
+    await parseAll(node.left)
+    await parseAll(node.right)
+}
 
 // 解析MemberExpression
 const parseMemberExpression = async (node: any) => {
@@ -255,7 +259,7 @@ const parseAll = async (node: any) => {
         await parseJSXExpressionContainer(node)
     } else if (node?.type === 'ArrayExpression') {
         await parseArrayExpression(node)
-    } else if (node?.type === 'IfStatement') {
+    } else if (node?.type === 'IfStatement' || node?.type === 'ConditionalExpression') {
         await parseIfStatement(node)
     } else if (node?.type === 'NewExpression') {
         await parseNewExpression(node)
@@ -267,7 +271,9 @@ const parseAll = async (node: any) => {
         parseSwitchCase(node)
     } else if(node?.type === 'MemberExpression') {
         await parseMemberExpression(node)
-    }
+    } else if (node?.type === 'AssignmentExpression') {
+        await parseAssignmentExpression(node)
+    } 
 }
 
 export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> => {
@@ -276,6 +282,7 @@ export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> =
         const script = compileScript(parsed.descriptor, { id: '456' });
         if (!script.scriptSetupAst) return
         lineOffset = script.loc.start.line > 0 ? script.loc.start.line - 1 : 0
+        console.log(script.scriptSetupAst)
         for (let i = 0; i < script.scriptSetupAst.length; i += 1) {
             await parseAll(script.scriptSetupAst[i])
         }
