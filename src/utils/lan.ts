@@ -1,3 +1,9 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-07 09:34:00
+ * @LastEditors: xuyong
+ */
+import { removeQuotes } from './index'
 // 判断传入的字符串是中文
 export function isChinese(str: string): boolean {
     const reg = /^[\u4e00-\u9fa5]+$/;
@@ -8,6 +14,8 @@ export function isChinese(str: string): boolean {
 export function includeChinese(str: string): boolean {
     return /[\u4e00-\u9fa5]/.test(str)
 }
+
+
 
 // 找出字符串全部的连续中文
 export function findChineseCharacters(str: string) {

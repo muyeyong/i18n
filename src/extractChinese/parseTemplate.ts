@@ -1,7 +1,13 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-10 08:35:49
+ * @LastEditors: xuyong
+ */
 import { SFCParseResult, compileTemplate } from "@vue/compiler-sfc";
 import { EditInfo } from "../type";
 import { includeChinese, findChineseCharacters } from "../utils/lan";
 import { NODE_TYPE } from "../constants/template";
+import { removeQuotes } from "../utils";
 
 let edits: Array<EditInfo> = []
 let lineOffset = 0
@@ -55,7 +61,7 @@ function traverse(node: any) {
         const target = findChineseCharacters(node.loc.source)
         target.forEach((item) => {
             edits.push({
-                value: item.text, 
+                value: removeQuotes(item.text), 
                 loc: {
                     ...node.loc,
                     start: { ...node.loc.start, line: node.loc.start.line + lineOffset, column: node.loc.start.column + item.start - 1 },
