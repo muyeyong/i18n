@@ -6,6 +6,8 @@ import { NODE_TYPE } from '../constants/template';
 let edits: Array<EditInfo> = []
 let lineOffset = 0
 
+const ignoreExpression = ['console']
+
 // 解析字符串
 const parseStringLiteral = async (node: any) => {
     // 根据位置信息进行替换
@@ -78,6 +80,9 @@ const parseFunctionExpression = async (node: any) => {
 }
 
 const parseCallExpression = async (node: any) => {
+    if (node.callee && node.callee.object &&  ignoreExpression.includes(node.callee.object.name)) {
+        return Promise.resolve()
+    }
     for (let i = 0; i < node.arguments.length; i += 1) {
         await parseAll(node.arguments[i])
     }
@@ -282,7 +287,6 @@ export const parseScript = async (parsed: SFCParseResult): Promise<EditInfo[]> =
         const script = compileScript(parsed.descriptor, { id: '456' });
         if (!script.scriptSetupAst) return
         lineOffset = script.loc.start.line > 0 ? script.loc.start.line - 1 : 0
-        console.log(script.scriptSetupAst)
         for (let i = 0; i < script.scriptSetupAst.length; i += 1) {
             await parseAll(script.scriptSetupAst[i])
         }
