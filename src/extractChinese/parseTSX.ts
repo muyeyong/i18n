@@ -16,6 +16,19 @@ export function parseTSX() {
 
   traverse(ast, {
     StringLiteral(path: any) {
+      const parentNode = path.parent;
+      if (
+        parentNode &&
+        parentNode.type === 'CallExpression' &&
+        parentNode.callee.type === 'MemberExpression' &&
+        parentNode.callee.object.type === 'Identifier' &&
+        parentNode.callee.object.name === 'console' &&
+        parentNode.callee.property.type === 'Identifier'
+     
+      ) {
+        // 在console语句中的字符串，忽略处理
+        return;
+      }
       const value = path.node.value;
       // 使用正则表达式查找中文字符串
       const chineseRegexp = /[\u4e00-\u9fa5]+/g;
