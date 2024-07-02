@@ -191,7 +191,7 @@ const parseNewExpression = async (node: any) => {
     }
 }
 
-// 解析 BlockStatement
+// 解析 BlockStatement   ObjectMethod
 const parseBlockStatement = async (node: any) => {
     for(let i = 0; i < node.body.length; i += 1) {
         await parseAll(node.body[i])
@@ -230,7 +230,7 @@ const parseAll = async (node: any) => {
     if (!node || !node.type) return
     if (node?.type === 'VariableDeclaration' && ['const', 'let', 'var'].includes(node.kind)) {
         await parseNormalVariable(node.declarations)
-    } else if (node?.type === 'ArrowFunctionExpression') {
+    } else if (node?.type === 'ArrowFunctionExpression' || node?.type === 'ObjectMethod') {
         await parseFunctionExpression(node)
     } else if (node?.type === 'ReturnStatement') {
         await parseOutInStatement(node.argument)
@@ -268,7 +268,7 @@ const parseAll = async (node: any) => {
         await parseIfStatement(node)
     } else if (node?.type === 'NewExpression') {
         await parseNewExpression(node)
-    } else if(node?.type === 'BlockStatement') {
+    } else if(node?.type === 'BlockStatement' ) {
         parseBlockStatement(node)
     } else if (node?.type === 'SwitchStatement') {
         parseSwitchStatement(node)
