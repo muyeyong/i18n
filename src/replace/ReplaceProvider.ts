@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { readConfig } from '../utils/file';
 
-export class ReplaceProvide implements vscode.CodeActionProvider {
+export class ReplaceProvider implements vscode.CodeActionProvider {
   provideCodeActions(): vscode.Command[] {
     const editor = vscode.window.activeTextEditor
     if (!editor) {
