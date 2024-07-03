@@ -6,7 +6,6 @@
 import * as vscode from 'vscode';
 import TipCodeLens from './tipCodeLens'
 import findI18nVariables from '../utils/findI18nVariables';
-import { readConfig } from '../utils/file';
 
 function matchI18nVariable(variables: any, targetValue: string) {
     if (targetValue in variables) {
@@ -16,15 +15,8 @@ function matchI18nVariable(variables: any, targetValue: string) {
     }
 }
 
-function escapeRegExp(str: string): string {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-}
 
-function escapeRegExpInString(str: string): string {
-    const regexStr = escapeRegExp(str);
-    const regex = new RegExp(regexStr);
-    return regexStr === str ? str : regexStr;
-}
+
 
 export class I18nProvider implements vscode.CodeLensProvider {
     private codeLenses: vscode.CodeLens[] = [];
@@ -38,16 +30,14 @@ export class I18nProvider implements vscode.CodeLensProvider {
     }
     public provideCodeLenses(document: vscode.TextDocument, token: vscode.CancellationToken): vscode.ProviderResult<vscode.CodeLens[]> {
         this.codeLenses = [];
-        const config = readConfig(document.fileName)
-        const wrap = config?.preferredI18n ?? '$t'
-        const regex = new RegExp(`${escapeRegExpInString(wrap)}\\('(.+?)'\\)`, "g");;
+        const regex = new RegExp(/(\$t|t)\('([^']+)'\)/, "g");
         const text = document.getText();
         let matchedAlias;
         // 获取国际化文件位置
         const i18nVariables = Object.assign({}, findI18nVariables(document.fileName))
         const matches = text.matchAll(regex)
         for (const match of matches) {
-            matchedAlias = matchI18nVariable(i18nVariables, match[1]);
+            matchedAlias = matchI18nVariable(i18nVariables, match[2]);
             if (matchedAlias) {
                 const line = document.lineAt(document.positionAt(match.index!).line);
                 const indexOf = line.text.indexOf(match[0]);
