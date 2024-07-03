@@ -13,6 +13,7 @@ import * as vscode from 'vscode';
 import {  readJSONSync } from 'fs-extra';
 import { join, sep } from 'path';
 import { findRootPath, readConfig } from '../utils/file';
+import { getI18nkey } from '../utils/lan'
 
 const replaceFirstChart = (str: string, chart: string) => {
     if (str.startsWith(chart)) {
@@ -20,6 +21,7 @@ const replaceFirstChart = (str: string, chart: string) => {
     }
     return str
 }
+
 export class PreviewProvider implements vscode.HoverProvider  {
 
     public provideHover(document: vscode.TextDocument, position: vscode.Position): vscode.ProviderResult<vscode.Hover> {
@@ -35,14 +37,14 @@ export class PreviewProvider implements vscode.HoverProvider  {
         const source: Record<string, any> = {}
         const operationPath = replaceFirstChart(document.uri.fsPath, sep);
         const rootPath = findRootPath(operationPath);
-        const { languages, translatedPath } = config
+        const { languages, translatedPath, i18n = ['t', '$t'] } = config
         for (let i = 0; i < languages.length; i++) {
             const lan = languages[i]
             const languageJson = readJSONSync(join(rootPath, translatedPath, `${lan}.json`))
             source[lan] = languageJson
         }
         // 获取当前单词
-        const i18nKey: string = this.getI18nkey(document, position);
+        const i18nKey: string = getI18nkey(i18n, document, position) 
         if (!i18nKey) {
             return new vscode.Hover('');
           }
@@ -52,18 +54,7 @@ export class PreviewProvider implements vscode.HoverProvider  {
         return new vscode.Hover(contents);
     }
 
-    getI18nkey(document: vscode.TextDocument, position: vscode.Position): string {
-        const range: vscode.Range | undefined = document.getWordRangeAtPosition(
-          position,
-          /(?:\$t|t)\('([^']+)'\)/gi
-        );
-        if (!range) {
-          return "";
-        }
-        const text: string = document.getText(range);
-        return text.replace(/(?:\$t|t)\(|\)|'|"/gi, "");
-      }
-
+    
     render(i18nKey: string, data: Record<string, any> = {}): string {
         const html: Array<string> = [];
     
