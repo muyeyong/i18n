@@ -110,7 +110,7 @@ const translate = async (params: any) => {
                   const parseResult = parseObject(value)
                   const translateResult: Record<string, any>  = {}
                   for(const key in parseResult) {
-                    extensionEmitter.emit('translating',`$(sync~spin)正在翻译(to ${lan})：${parseResult[key]}`)
+                    extensionEmitter.emit('statsBarShow',`$(sync~spin)正在翻译(to ${lan})：${parseResult[key]}`)
                     const res  = await translateApi(config, parseResult[key], languageMap[lan])
                     if (res.success) {
                         const keys = key.split('.')
@@ -128,7 +128,7 @@ const translate = async (params: any) => {
                   }
                   otherLanguageJson[key] = translateResult
                 } else {
-                    extensionEmitter.emit('translating',`$(sync~spin)正在翻译：${value}`)
+                    extensionEmitter.emit('statsBarShow',`$(sync~spin)正在翻译：${value}`)
                     const res = await translateApi(config, value, languageMap[lan])
                     if (!res.success) {
                         errorList.push({query: value, failureReason: res.errorMag! })
@@ -144,7 +144,7 @@ const translate = async (params: any) => {
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJson, { spaces: 2 })
         }
         translating = false
-        extensionEmitter.emit('translated', '✅翻译完成了，拜拜了您，请注意查看失败提示')
+        extensionEmitter.emit('statsBarHide', '✅翻译完成了，拜拜了您，请注意查看失败提示')
         vscode.window.showInformationMessage('翻译完成')
     } else {
         vscode.window.showWarningMessage('请先生成配置文件')
@@ -152,7 +152,7 @@ const translate = async (params: any) => {
 };
 
 
-const translateApi = async (config: Config, query: string, toLan: string): Promise<{ errorMag?: string, success: boolean, result?: string}> => {
+export const translateApi = async (config: Config, query: string, toLan: string): Promise<{ errorMag?: string, success: boolean, result?: string}> => {
     try {
         const { baiduAppid, baiduSecretKey, youdaoAppid, youdaoSecretKey, translateDelay } = config
         const delay = Number.isInteger(translateDelay) ? translateDelay : 1000

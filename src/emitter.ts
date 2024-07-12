@@ -5,10 +5,10 @@ class ExtensionEmitter extends EventEmitter {}
 
 export const extensionEmitter = new ExtensionEmitter();
 
-extensionEmitter.on('translating', (msg: string) => {
+extensionEmitter.on('statsBarShow', (msg: string) => {
   statsBar.update(msg)
 });
 
-extensionEmitter.on('translated' , (msg?: string) => {
+extensionEmitter.on('statsBarHide' , (msg?: string) => {
   statsBar.hide(msg)
 })

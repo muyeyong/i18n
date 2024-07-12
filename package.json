@@ -51,6 +51,10 @@
       {
         "command": "lv-i18n.replace",
         "title": "替代选中"
+      },
+      {
+        "command": "lv-i18n.edit",
+        "title": "编辑"
       }
     ],
     "configuration": {

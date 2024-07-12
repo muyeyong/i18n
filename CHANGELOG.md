@@ -6,4 +6,6 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- Initial release
+- 0.65 (2024-7-12)
+⚡ Features
++ 新增国际化文案修改

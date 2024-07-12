@@ -15,6 +15,9 @@ import { join, sep } from 'path';
 import { findRootPath, readConfig } from '../utils/file';
 import { getI18nkey } from '../utils/lan'
 
+function makeMarkdownCommand(command: string, args: any): vscode.Uri {
+  return vscode.Uri.parse(`command:${command}?${encodeURIComponent(JSON.stringify({ actionSource: 'hover', ...args }))}`)
+}
 const replaceFirstChart = (str: string, chart: string) => {
     if (str.startsWith(chart)) {
         return str.slice(1)
@@ -48,28 +51,28 @@ export class PreviewProvider implements vscode.HoverProvider  {
         if (!i18nKey) {
             return new vscode.Hover('');
           }
-        // 获取全部翻译结果
-        const text: string = this.render(i18nKey, source);
+        const text: string = this.render(i18nKey, source, join(rootPath, translatedPath));
         const contents: vscode.MarkdownString = new vscode.MarkdownString(text);
+        contents.isTrusted = true
         return new vscode.Hover(contents);
     }
 
     
-    render(i18nKey: string, data: Record<string, any> = {}): string {
+    render(i18nKey: string, data: Record<string, any> = {}, path: string): string {
         const html: Array<string> = [];
-    
+        
         Object.keys(data).map((langType: string) => {
           const source = data[langType];
           const value = source[i18nKey];
           if (value) {
-            html.push(this.formatter(langType, value));
+            html.push(this.formatter(langType, value, i18nKey, path));
           }else{
-            html.push(this.formatter(langType,`"${i18nKey}" is undefined.`));
+            html.push(this.formatter(langType,`"${i18nKey}" is undefined.`, i18nKey, path));
           }
         });
         return html.join("\n\n");
       }
-      formatter(key: string, value: string): string {
-        return `**${key}**: ${value}`;
+      formatter(key: string, value: string, i18Key: string, path: string): string {
+        return `**${key}**: ${value} [✏️](${makeMarkdownCommand('lv-i18n.edit', {lan: key, i18Key, local: join(path,  key + '.json') })}) `;
       }
 }

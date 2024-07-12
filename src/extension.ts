@@ -10,6 +10,7 @@ import createConfig from './createConfig';
 import translate from './translate'
 import { ReplaceProvider } from './replace/ReplaceProvider'
 import replace from './replace/replace'
+import edit from './edit'
 import { statsBar } from './statsBar'
 import { PreviewProvider } from './preview/PreviewProvider';
 
@@ -20,6 +21,7 @@ export function activate(context: vscode.ExtensionContext) {
 	createConfig(context)
 	translate(context)
 	replace(context)
+	edit(context)
 	vscode.languages.registerCodeLensProvider(['typescript', 'vue', 'javascript', 'typescriptreact', 'javascriptreact'], new I18nProvider())
 	vscode.languages.registerCodeActionsProvider(['typescript', 'vue', 'javascript', 'typescriptreact', 'javascriptreact'], new ReplaceProvider() )
 	vscode.languages.registerHoverProvider(['typescript', 'vue', 'javascript', 'typescriptreact', 'javascriptreact'], new PreviewProvider() )
