@@ -65,14 +65,14 @@ export class PreviewProvider implements vscode.HoverProvider  {
           const source = data[langType];
           const value = source[i18nKey];
           if (value) {
-            html.push(this.formatter(langType, value, i18nKey, path));
+            html.push(this.formatter(langType, value, true, i18nKey, path));
           }else{
-            html.push(this.formatter(langType,`"${i18nKey}" is undefined.`, i18nKey, path));
+            html.push(this.formatter(langType,`"${i18nKey}" is undefined.`, false, i18nKey, path));
           }
         });
         return html.join("\n\n");
       }
-      formatter(key: string, value: string, i18Key: string, path: string): string {
-        return `**${key}**: ${value} [✏️](${makeMarkdownCommand('lv-i18n.edit', {lan: key, i18Key, local: join(path,  key + '.json') })}) `;
+      formatter(key: string, value: string, validValue: boolean, i18Key: string, path: string): string {
+        return `**${key}**: ${value} [✏️](${makeMarkdownCommand('lv-i18n.edit', {lan: key, i18Key, value: validValue ? value: '', local: join(path,  key + '.json') })}) `;
       }
 }

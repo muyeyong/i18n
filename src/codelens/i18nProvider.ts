@@ -40,11 +40,18 @@ export class I18nProvider implements vscode.CodeLensProvider {
             const matchedAlias = matchI18nVariable(i18nVariables, match[1]);
             if (matchedAlias) {
                 const line = document.lineAt(document.positionAt(match.index!).line);
-                const indexOf = line.text.indexOf(match[1]);
-                const position = new vscode.Position(line.lineNumber, indexOf);
-                const range = document.getWordRangeAtPosition(position, regex);
-                if (range) {
-                    this.codeLenses.push(new TipCodeLens(range, matchedAlias))
+                let startIndex = 0;
+
+                while (startIndex !== -1) {
+                    startIndex = line.text.indexOf(match[1], startIndex);
+                    if (startIndex !== -1) {
+                        const position = new vscode.Position(line.lineNumber, startIndex);
+                        const range = document.getWordRangeAtPosition(position, regex);
+                        if (range) {
+                            this.codeLenses.push(new TipCodeLens(range, matchedAlias))
+                        }
+                        startIndex += match[1].length;
+                    }
                 }
             }
         }

@@ -11,7 +11,7 @@ import { translateApi} from '../translate'
 
 
 const edit = async (params: any) => {
-    const { i18Key, local, lan } = params
+    const { i18Key, local, lan, value } = params
     const config = readConfig(local)
     if (!config) return 
     const userInput = await vscode.window.showInputBox(
@@ -22,7 +22,8 @@ const edit = async (params: any) => {
                     return '输入不能为空！';
                 }
                 return null;
-            }
+            },
+            value
         })
     if (!userInput) return
     const lanObj = readJSONSync(local)
