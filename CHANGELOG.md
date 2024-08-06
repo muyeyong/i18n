@@ -11,12 +11,14 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-- 0.65 (2024-7-12)
-⚡ Features
-+ 新增国际化文案修改
+### 0.66 (2024-7-18)
+### ⚡ Features
+* 国际化文案修改设置默认值
 
-- 0.65 (2024-7-18)
-⚡ Features
-+ 国际化文案修改设置默认值
-🐞 Bug Fixes
-+ 部分codeLens不显示
+### 🐞 Bug Fixes
+* 部分codeLens不显示
+
+### 0.65 (2024-7-12)
+### ⚡ Features
+* 新增国际化文案修改
+

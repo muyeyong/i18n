@@ -1,7 +1,7 @@
 {
   "name": "lv-i18n",
   "displayName": "LV i18n",
-  "description": "国际化插件",
+  "description": "国际化插件，支持VUE3 TS TSX JS JSX",
   "version": "0.66.0",
   "engines": {
     "vscode": "^1.37.0"
@@ -42,7 +42,11 @@
       },
       {
         "command": "lv-i18n.translate",
-        "title": "翻译中文"
+        "title": "在线翻译中文"
+      },
+      {
+        "command": "lv-i18n.translateLocal",
+        "title": "本地翻译中文"
       },
       {
         "command": "lv-i18n.createConfig",
@@ -89,6 +93,11 @@
         },
         {
           "command": "lv-i18n.translate",
+          "group": "1_workspace@2",
+          "when": "resourceFilename =~ /.ts|.js|.vue|.tsx|.jsx/"
+        },
+        {
+          "command": "lv-i18n.translateLocal",
           "group": "1_workspace@2",
           "when": "resourceFilename =~ /.ts|.js|.vue|.tsx|.jsx/"
         },

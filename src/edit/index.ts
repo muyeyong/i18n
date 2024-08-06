@@ -7,7 +7,7 @@ import { readJSONSync, writeFileSync } from 'fs-extra';
 import * as vscode from 'vscode';
 import { readConfig } from '../utils/file';
 import { extensionEmitter } from '../emitter'
-import { translateApi} from '../translate'
+import { onlineTranslate} from '../translate'
 
 
 const edit = async (params: any) => {
@@ -35,7 +35,7 @@ const edit = async (params: any) => {
     const otherLangs = config.languages.filter(item => item !== lan) 
     const errorList = []
     for (const otherLan of otherLangs) {
-        const res = await translateApi(config, userInput, config.languageMap[otherLan])
+        const res = await onlineTranslate(config, userInput, config.languageMap[otherLan])
         extensionEmitter.emit('statsBarShow',`$(sync~spin)正在翻译(to ${otherLan})：${userInput}`)
         if (!res.success) {
             errorList.push({query: `${userInput} to ${otherLan}` , failureReason: res.errorMag! })
