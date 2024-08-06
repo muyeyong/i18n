@@ -12,6 +12,7 @@ import { generateLanguageFiles } from '../common/checkLanJson';
 import { extensionEmitter } from '../emitter'
 
 import { onlineTranslate } from './online'
+import { localTranslate } from './local'
 
 // TODO 读取ts文件，需要把读取文件和写入文件抽取出来，适应不同类型文件的读写
 // 通过文件名去获取是什么类型的文件 json ts js
@@ -53,17 +54,22 @@ const translate = async (params: any, type: 'online' | 'local') => {
             vscode.window.showWarningMessage(`请前往${join(translatedPath, `${chineseFileName}.json`)}执行命令`)
             return
         }
-        if (!(config.baiduAppid && config.baiduSecretKey)) {
-            if (!(config.youdaoAppid && config.youdaoSecretKey)) {
-                vscode.window.showWarningMessage(`请在配置文件中配置翻译服务所需信息，否则翻译功能将不可用`);
-                return
-            }
-        } else if (!(config.youdaoAppid && config.youdaoSecretKey)) {
+        if (type === 'online') {
             if (!(config.baiduAppid && config.baiduSecretKey)) {
-                vscode.window.showWarningMessage(`请在配置文件中配置翻译服务所需信息，否则翻译功能将不可用`);
-                return
+                if (!(config.youdaoAppid && config.youdaoSecretKey)) {
+                    return vscode.window.showWarningMessage(`请在配置文件中配置翻译服务所需信息，否则翻译功能将不可用`);
+                }
+            } else if (!(config.youdaoAppid && config.youdaoSecretKey)) {
+                if (!(config.baiduAppid && config.baiduSecretKey)) {
+                    return vscode.window.showWarningMessage(`请在配置文件中配置翻译服务所需信息，否则翻译功能将不可用`);
+                }
+            }
+        } else if (type === 'local') {
+            if (!config.localeTranslatePath) {
+                return vscode.window.showWarningMessage(`使用本地翻译请先配置本地翻译文件路径，否则翻译功能将不可用`);
             }
         }
+       
         translating = true
         const chineseJson = readJSONSync(chineseJsonPath)
         const otherLanguage = languages.filter(lan => lan !== chineseFileName)
@@ -74,7 +80,6 @@ const translate = async (params: any, type: 'online' | 'local') => {
             otherLanguageJsonMap.set(lan, otherLanguageJson)
         }
         for (let key in chineseJson) {
-            // TODO lan 作为key，需要翻译成什么语言
             for (let i = 0; i < otherLanguage.length; i++) {
                 const lan = otherLanguage[i]
                 const otherLanguageJson = otherLanguageJsonMap.get(lan)
@@ -89,7 +94,6 @@ const translate = async (params: any, type: 'online' | 'local') => {
                 }
             }
         }
-        // TODO 同一个字段，英文 繁体...一起翻译？
         let index = 0
         for (const [key, texts] of translateMap.entries()) {
             index += 1
@@ -111,6 +115,8 @@ const translate = async (params: any, type: 'online' | 'local') => {
                         let res: { errorMag?: string; success: boolean; result?: string } = { success: false }
                         if (type === 'online') {
                             res = await onlineTranslate(config, parseResult[key], languageMap[lan])
+                        } else if (type === 'local') {
+                            res = await localTranslate(config, parseResult[key], languageMap[lan], rootPath)
                         }
                         if (res.success) {
                             const keys = key.split('.')
@@ -123,7 +129,7 @@ const translate = async (params: any, type: 'online' | 'local') => {
                             }
                         }
                         else {
-                            errorList.push({ query: parseResult[key], failureReason: res.errorMag! })
+                            errorList.push({ query: `${parseResult[key]}(to ${languageMap[lan]})`, failureReason: res.errorMag! })
                         }
                     }
                     otherLanguageJson[key] = translateResult
@@ -132,9 +138,11 @@ const translate = async (params: any, type: 'online' | 'local') => {
                     let res: { errorMag?: string; success: boolean; result?: string } = { success: false }
                     if (type === 'online') {
                         res = await onlineTranslate(config, value, languageMap[lan])
+                    } else if (type === 'local') {
+                        res = await localTranslate(config, value, languageMap[lan], rootPath)
                     }
                     if (!res.success) {
-                        errorList.push({ query: value, failureReason: res.errorMag! })
+                        errorList.push({ query: `${value}(to ${languageMap[lan]})`, failureReason: res.errorMag! })
                     } else {
                         otherLanguageJson[key] = res.result!
                     }
@@ -163,3 +171,4 @@ export default function translateCommand(context: vscode.ExtensionContext) {
 }
 
 export * from './online'
+export * from './local'

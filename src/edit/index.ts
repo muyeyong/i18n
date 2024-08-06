@@ -35,6 +35,7 @@ const edit = async (params: any) => {
     const otherLangs = config.languages.filter(item => item !== lan) 
     const errorList = []
     for (const otherLan of otherLangs) {
+        // TODO 判断是否存在本地文件，存在就调用本地翻译
         const res = await onlineTranslate(config, userInput, config.languageMap[otherLan])
         extensionEmitter.emit('statsBarShow',`$(sync~spin)正在翻译(to ${otherLan})：${userInput}`)
         if (!res.success) {

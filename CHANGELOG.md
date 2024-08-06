@@ -11,6 +11,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### 0.66 (2024-8-6)
+### ⚡ Features
+* 支持本地文案翻译
+
 ### 0.66 (2024-7-18)
 ### ⚡ Features
 * 国际化文案修改设置默认值

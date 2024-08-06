@@ -42,11 +42,11 @@
       },
       {
         "command": "lv-i18n.translate",
-        "title": "在线翻译中文"
+        "title": "在线翻译"
       },
       {
         "command": "lv-i18n.translateLocal",
-        "title": "本地翻译中文"
+        "title": "本地翻译"
       },
       {
         "command": "lv-i18n.createConfig",
@@ -153,6 +153,7 @@
     "axios": "^1.4.0",
     "crypto-js": "^4.1.1",
     "fs-extra": "^11.1.1",
-    "nanoid": "^4.0.2"
+    "nanoid": "^4.0.2",
+    "xlsx-extract": "^0.1.3"
   }
 }
