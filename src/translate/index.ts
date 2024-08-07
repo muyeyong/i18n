@@ -6,7 +6,7 @@
 import * as vscode from 'vscode';
 import { findRootPath, readConfig } from '../utils/file';
 import { join, sep } from 'path';
-import { readJSONSync, writeJSONSync } from 'fs-extra';
+import { readJSONSync, writeJSONSync, existsSync } from 'fs-extra';
 import { checkConfig, parseObject } from '../utils/common';
 import { generateLanguageFiles } from '../common/checkLanJson';
 import { extensionEmitter } from '../emitter'
@@ -67,7 +67,11 @@ const translate = async (params: any, type: 'online' | 'local') => {
         } else if (type === 'local') {
             if (!config.localeTranslatePath) {
                 return vscode.window.showWarningMessage(`使用本地翻译请先配置本地翻译文件路径，否则翻译功能将不可用`);
+            } 
+            if (!existsSync(join(rootPath, config.localeTranslatePath))) {
+                return vscode.window.showWarningMessage(`本地翻译文件不存在，请使用正确本地翻译文件路径，否则翻译功能将不可用`);
             }
+            
         }
        
         translating = true

@@ -3,12 +3,12 @@
  * @Date: 2024-07-11 20:46:59
  * @LastEditors: xuyong
  */
-import { readJSONSync, writeFileSync } from 'fs-extra';
+import { readJSONSync, writeFileSync, existsSync } from 'fs-extra';
 import * as vscode from 'vscode';
-import { readConfig } from '../utils/file';
+import { readConfig, findRootPath } from '../utils/file';
 import { extensionEmitter } from '../emitter'
-import { onlineTranslate} from '../translate'
-
+import { onlineTranslate, localTranslate} from '../translate'
+import { join } from 'path';
 
 const edit = async (params: any) => {
     const { i18Key, local, lan, value } = params
@@ -31,18 +31,27 @@ const edit = async (params: any) => {
        return vscode.window.showErrorMessage(`${local} 文件不存在`);
     }
    lanObj[i18Key] = userInput
+   
+
    if (config.chineseFileName === lan)  {
     const otherLangs = config.languages.filter(item => item !== lan) 
     const errorList = []
     for (const otherLan of otherLangs) {
-        // TODO 判断是否存在本地文件，存在就调用本地翻译
-        const res = await onlineTranslate(config, userInput, config.languageMap[otherLan])
         extensionEmitter.emit('statsBarShow',`$(sync~spin)正在翻译(to ${otherLan})：${userInput}`)
+        const rootPath = findRootPath(local)
+        let res 
+        if (existsSync(join(rootPath, config.localeTranslatePath))) {
+             res = await localTranslate(config, userInput, otherLan, rootPath)
+        }
+        if (!res?.success) {
+            res = await onlineTranslate(config, userInput, config.languageMap[otherLan])
+        }
+     
         if (!res.success) {
             errorList.push({query: `${userInput} to ${otherLan}` , failureReason: res.errorMag! })
         } else {
             const targetPath = local.replace(`${lan}.json`, `${otherLan}.json`)
-            const temp =  readJSONSync(targetPath)
+            const temp = readJSONSync(targetPath)
             temp[i18Key] = res.result!
             writeFileSync(targetPath, JSON.stringify(temp, null, 4))
         }
