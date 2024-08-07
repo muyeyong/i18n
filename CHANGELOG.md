@@ -11,7 +11,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-### 0.66 (2024-8-6)
+### 0.67 (2024-8-6)
 ### ⚡ Features
 * 支持本地文案翻译
 
