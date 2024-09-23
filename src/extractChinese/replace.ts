@@ -43,7 +43,7 @@ export const writeExtractResult = (edits: Array<EditInfo>, config: Config, rootP
     const activeTextEditor = vscode.window.activeTextEditor
     activeTextEditor?.edit(async (editBuilder) => {
         for (const { value, loc, type, name } of edits) {
-            const newValue = value.replace(/\s+/g, "")
+            const newValue = value.trim()
             let flag = existChineseMap.get(newValue)
             if (!flag) {
                 flag = nanoid(6)

@@ -1,3 +1,8 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-03 08:41:54
+ * @LastEditors: xuyong
+ */
 import * as vscode from 'vscode';
 import { findRootPath, isFileExisted } from '../utils/file';
 import { LV18N_CONFIG } from '../constants/file';
@@ -22,7 +27,7 @@ const config = (params: any) => {
     }
    } else {
     // 提示生成配置文件失败
-     vscode.window.showErrorMessage('生成配置文件失败, 请重试')
+     vscode.window.showErrorMessage('找不到项目根目录，生成配置文件失败, 请重试')
    }
 };
 

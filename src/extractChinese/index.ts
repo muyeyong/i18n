@@ -1,3 +1,8 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-03 08:41:54
+ * @LastEditors: xuyong
+ */
 import * as vscode from 'vscode';
 import { readConfig, findRootPath } from '../utils/file';
 import { EditInfo } from '../type';
@@ -37,7 +42,6 @@ const extract = async (params: any) => {
                 vscode.window.showErrorMessage('暂不支持该文件类型');
                 return
             }
-           
             writeExtractResult(result, config, rootPath, params.fsPath)
         }
 

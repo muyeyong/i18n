@@ -1,6 +1,11 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-03 08:41:54
+ * @LastEditors: xuyong
+ */
 import { lstatSync, accessSync, readJSONSync } from 'fs-extra'
 import { sep, join } from 'path'
-import { PACKAGE_JSON, LV18N_CONFIG } from '../constants/file'
+import { PACKAGE_JSON, LV18N_CONFIG, ROOT_PATH_FLAG } from '../constants/file'
 import { Config } from '../type'
 
 
@@ -23,12 +28,13 @@ export const findRootPath = (path: string): string => {
     const stat = lstatSync(path)
     const parentPath = path.split(sep).filter(item => item !== '').slice(0, -1).join(sep)
     if (stat.isDirectory()) {
-        if (isFileExisted(join(path, PACKAGE_JSON))) {
-            return path
+        for(const item of ROOT_PATH_FLAG) {
+            if (isFileExisted(join(path, item))) {
+                return path
+            }
         }
-        else {
-            return findRootPath(parentPath)
-        }
+       return findRootPath(parentPath)
+        
     } else {
         return findRootPath(parentPath)
     }
@@ -49,7 +55,7 @@ export const readConfig = (path: string): Config | null => {
 export const readChinese = (path: string): any => {
     const config = readConfig(path)
     if(config) {
-        const { languages, translatedPath, chineseFileName } = config
+        const { translatedPath, chineseFileName } = config
         const rootPath = findRootPath(path)
         if(rootPath !== '' && chineseFileName) {
             const chinesePath = join(rootPath, translatedPath, `${chineseFileName}.json`)

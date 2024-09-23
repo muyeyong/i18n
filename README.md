@@ -1,10 +1,3 @@
-<!--
-
- * @Author: xuyong
- * @Date: 2023-07-03 08:41:54
- * @LastEditors: xuyong
-   -->
-
 ## 国际化插件
 
 ## 简介
@@ -54,6 +47,7 @@
 | chineseFileName     | zh-cn                          | string | 中文文件名                                                   |          |
 | youdaoAppid         |                                | string | 有道翻译appid                                                |          |
 | youdaoSecretKey     |                                | string | 有道翻译密钥                                                 |          |
+| customExtraction    | []                             | Array  | 定义选中自定义提取格式，例如: ["$t('key')"]                  |          |
 
 
 

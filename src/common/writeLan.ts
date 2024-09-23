@@ -1,3 +1,8 @@
+/*
+ * @Author: xuyong
+ * @Date: 2023-07-13 08:30:25
+ * @LastEditors: xuyong
+ */
 // 生成多语言配置文件(json)
 import { Config } from "../type";
 import {  readJSONSync,  writeJSONSync } from "fs-extra";
@@ -12,7 +17,7 @@ import { readChinese } from "../utils/file";
     const chineseJson: Record<string, string> = {}
     const otherLanguageJson: Record<string, string> = {}
     for (const [key, value] of chineseMap.entries()) {
-         const newKey = typeof key === 'string' ? key.replace(/\s+/g, "") : key
+         const newKey = typeof key === 'string' ? key.trim() : key
         chineseJson[value] = newKey
         otherLanguageJson[value] = ''
     }
