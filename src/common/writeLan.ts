@@ -16,25 +16,28 @@ import { readChinese } from "../utils/file";
     const existChineseJson = readChinese(currPath)
     const chineseJson: Record<string, string> = {}
     const otherLanguageJson: Record<string, string> = {}
+    let missingKey :Record<string, string> = {}
     for (const [key, value] of chineseMap.entries()) {
          const newKey = typeof key === 'string' ? key.trim() : key
         chineseJson[value] = newKey
         otherLanguageJson[value] = ''
     }
     languages.forEach((lan: string) => {
+        missingKey = {}
         if (lan === chineseFileName) {
             if (Object.keys(chineseJson).length > 0) {
                 writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), { ...existChineseJson, ...chineseJson}, { spaces: 2 })
             }
         } else {
-           const existOtherLangue = readJSONSync(join(rootPath, translatedPath, `${lan}.json`), { throws: false})??{}
+           const existOtherLangue = readJSONSync(join(rootPath, translatedPath, `${lan}.json`), { throws: false}) ?? {}
            for(const key in existChineseJson) {
-                if(!existOtherLangue[key] && !otherLanguageJson[key]) {
-                     otherLanguageJson[key] = ''
+                const noSpaceKey = key.trim()
+                if(!existOtherLangue[noSpaceKey] && !otherLanguageJson[noSpaceKey]) {
+                    missingKey[noSpaceKey] = ''
                 }
            }
-           if (Object.keys(otherLanguageJson).length > 0) {
-               writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), {...existOtherLangue, ...otherLanguageJson}, { spaces: 2 })
+           if (Object.keys(otherLanguageJson).length > 0 || Object.keys(missingKey).length > 0) {
+               writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), {...existOtherLangue, ...otherLanguageJson, ...missingKey}, { spaces: 2 })
            }
         }
     })

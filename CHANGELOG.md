@@ -11,6 +11,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### 0.73 (2024-11-4)
+### 🐞 Bug Fixes
+* 修复中文提取错误
+
 ### 0.72 (2024-9-23)
 ### ⚡ Features
 * 支持自定义选中提取格式
