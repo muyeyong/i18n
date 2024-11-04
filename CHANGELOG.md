@@ -11,7 +11,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
-### 0.73 (2024-11-4)
+### 0.78 (2024-11-4)
 ### 🐞 Bug Fixes
 * 修复中文提取错误
 
