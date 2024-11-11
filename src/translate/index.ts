@@ -115,7 +115,6 @@ const translate = async (params: any, type: 'online' | 'local') => {
                     const parseResult = parseObject(value)
                     const translateResult: Record<string, any> = {}
                     for (const key in parseResult) {
-                        // TODO 需要加参数区分本地翻译还是线上翻译
                         let res: { errorMag?: string; success: boolean; result?: string } = { success: false }
                         if (type === 'online') {
                             res = await onlineTranslate(config, parseResult[key], languageMap[lan])
@@ -133,12 +132,19 @@ const translate = async (params: any, type: 'online' | 'local') => {
                             }
                         }
                         else {
+                            const keys = key.split('.')
+                            let point: any = translateResult
+                            for (let j = 0; j < keys.length; j++) {
+                                if (!(keys[j] in point)) {
+                                    j === keys.length - 1 ? point[keys[j]] = parseResult[key] : point[keys[j]] = {}
+                                }
+                                point = point[keys[j]]
+                            }
                             errorList.push({ query: `${parseResult[key]}(to ${languageMap[lan]})`, failureReason: res.errorMag! })
                         }
                     }
                     otherLanguageJson[key] = translateResult
                 } else {
-                    // TODO 需要加参数区分本地翻译还是线上翻译
                     let res: { errorMag?: string; success: boolean; result?: string } = { success: false }
                     if (type === 'online') {
                         res = await onlineTranslate(config, value, languageMap[lan])
@@ -146,6 +152,7 @@ const translate = async (params: any, type: 'online' | 'local') => {
                         res = await localTranslate(config, value, languageMap[lan], rootPath)
                     }
                     if (!res.success) {
+                        otherLanguageJson[key] = value
                         errorList.push({ query: `${value}(to ${languageMap[lan]})`, failureReason: res.errorMag! })
                     } else {
                         otherLanguageJson[key] = res.result!
