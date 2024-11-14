@@ -26,7 +26,7 @@ export const findRootPath = (path: string): string => {
         return ''
     }
     const stat = lstatSync(path)
-    const parentPath = path.split(sep).filter(item => item !== '').slice(0, -1).join(sep)
+    const parentPath = path.split(sep).slice(0, -1).join(sep)
     if (stat.isDirectory()) {
         for(const item of ROOT_PATH_FLAG) {
             if (isFileExisted(join(path, item))) {
