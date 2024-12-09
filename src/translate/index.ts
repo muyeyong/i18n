@@ -14,9 +14,6 @@ import { extensionEmitter } from '../emitter'
 import { onlineTranslate } from './online'
 import { localTranslate } from './local'
 
-// TODO 读取ts文件，需要把读取文件和写入文件抽取出来，适应不同类型文件的读写
-// 通过文件名去获取是什么类型的文件 json ts js
-// 是否在翻译
 // TODO 翻译失败应该自己进行重试
 // 不通的应用可以单独翻译，不是同一个接口控制
 // TODO 翻译超时处理
@@ -132,14 +129,14 @@ const translate = async (params: any, type: 'online' | 'local') => {
                             }
                         }
                         else {
-                            const keys = key.split('.')
-                            let point: any = translateResult
-                            for (let j = 0; j < keys.length; j++) {
-                                if (!(keys[j] in point)) {
-                                    j === keys.length - 1 ? point[keys[j]] = parseResult[key] : point[keys[j]] = {}
-                                }
-                                point = point[keys[j]]
-                            }
+                            // const keys = key.split('.')
+                            // let point: any = translateResult
+                            // for (let j = 0; j < keys.length; j++) {
+                            //     if (!(keys[j] in point)) {
+                            //         j === keys.length - 1 ? point[keys[j]] = parseResult[key] : point[keys[j]] = {}
+                            //     }
+                            //     point = point[keys[j]]
+                            // }
                             errorList.push({ query: `${parseResult[key]}(to ${languageMap[lan]})`, failureReason: res.errorMag! })
                         }
                     }
@@ -152,7 +149,7 @@ const translate = async (params: any, type: 'online' | 'local') => {
                         res = await localTranslate(config, value, languageMap[lan], rootPath)
                     }
                     if (!res.success) {
-                        otherLanguageJson[key] = value
+                        // otherLanguageJson[key] = value
                         errorList.push({ query: `${value}(to ${languageMap[lan]})`, failureReason: res.errorMag! })
                     } else {
                         otherLanguageJson[key] = res.result!
