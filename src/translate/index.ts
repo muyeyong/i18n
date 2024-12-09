@@ -7,7 +7,7 @@ import * as vscode from 'vscode';
 import { findRootPath, readConfig } from '../utils/file';
 import { join, sep } from 'path';
 import { readJSONSync, writeJSONSync, existsSync } from 'fs-extra';
-import { checkConfig, parseObject } from '../utils/common';
+import { checkConfig, parseObject, sleep } from '../utils/common';
 import { generateLanguageFiles } from '../common/checkLanJson';
 import { extensionEmitter } from '../emitter'
 
@@ -18,6 +18,7 @@ import { localTranslate } from './local'
 // 不通的应用可以单独翻译，不是同一个接口控制
 // TODO 翻译超时处理
 let translating = false
+let tryAgainCount = 2
 let errorList: Array<{ query: string, failureReason: string }> = []
 
 const replaceFirstChart = (str: string, chart: string) => {
@@ -28,14 +29,14 @@ const replaceFirstChart = (str: string, chart: string) => {
 }
 
 const translate = async (params: any, type: 'online' | 'local') => {
-    params = params[0]
+   const param = params[0]
     if (translating) {
         vscode.window.showWarningMessage('正在翻译，请稍后再试')
         return
     }
     errorList = []
     // 找到package.json的目录
-    const operationPath = replaceFirstChart(params.fsPath, sep);
+    const operationPath = replaceFirstChart(param.fsPath, sep);
     const rootPath = findRootPath(operationPath);
     const config = readConfig(operationPath)
     // 待翻译列表
@@ -158,13 +159,20 @@ const translate = async (params: any, type: 'online' | 'local') => {
             }
         }
 
-        if (errorList.length > 0) {
-            vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join(';')}`);
-        }
         for(const lan of otherLanguage) {
             writeJSONSync(join(rootPath, translatedPath, `${lan}.json`), otherLanguageJsonMap.get(lan), { spaces: 2 })
         }
         translating = false
+        if (errorList.length > 0 && tryAgainCount > 0) {
+            extensionEmitter.emit('statsBarHide', '😰翻译重试')
+            await sleep(1500)
+            tryAgainCount -= 1
+            translate(params, type)
+            return
+        } else {
+            vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join(';')}`);
+        }
+        tryAgainCount = 2
         extensionEmitter.emit('statsBarHide', '✅翻译完成了，拜拜了您，请注意查看失败提示')
         vscode.window.showInformationMessage('翻译完成')
     } else {
