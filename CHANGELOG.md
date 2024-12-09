@@ -11,6 +11,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### 0.80 (2024-12-9)
+### ⚡ Features
+* 翻译失败重试
+
 ### 0.78 (2024-11-11)
 ### ⚡ Features
 * 优化翻译失败结果
