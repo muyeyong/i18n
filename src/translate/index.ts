@@ -169,7 +169,7 @@ const translate = async (params: any, type: 'online' | 'local') => {
             tryAgainCount -= 1
             translate(params, type)
             return
-        } else {
+        } else if (errorList.length > 0) {
             vscode.window.showErrorMessage(`翻译失败的文案：${errorList.map(item => (`文案： ${item.query}, 失败原因： ${item.failureReason}`)).join(';')}`);
         }
         tryAgainCount = 2
